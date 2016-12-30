@@ -2,3 +2,4 @@ rota
 test
 *.hi
 *.o
+*.prof
