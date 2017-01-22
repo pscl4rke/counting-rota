@@ -1,8 +1,11 @@
 
 import Control.Monad (forM_)
+import Data.List (sortBy)
+import Data.Ord (comparing)
 
 import Planning
 import Requirements
+import Scoring
 
 import Test.HUnit
 
@@ -50,6 +53,13 @@ display (Rota slotmap) = do
     putStrLn (replicate 72 '=')
   where available prefs counters = filter (not . (canDo prefs)) counters
 
+-- BACKPORTED
+sortOn :: Ord b => (a -> b) -> [a] -> [a]
+sortOn f =
+  map snd . sortBy (comparing fst) . map (\x -> let y = f x in y `seq` (y, x))
+
 main :: IO ()
-main = forM_ (usableRotas counters slots) $ \rota -> display rota
---main = putStrLn $ show $ length $ usableRotas counters slots
+main = do
+    let rotas = reverse $ sortOn overallScore $ usableRotas counters slots
+    forM_ (take 5 rotas) $ \rota -> display rota
+    --putStrLn $ show $ length rotas
