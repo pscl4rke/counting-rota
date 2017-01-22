@@ -12,3 +12,4 @@ display (Rota slotmap) = do
 
 main :: IO ()
 main = forM_ (usableRotas counters slots) $ \rota -> display rota
+--main = putStrLn $ show $ length $ usableRotas counters slots

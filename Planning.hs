@@ -7,33 +7,68 @@ import Test.HUnit
 
 
 
+data Availability = CanDo | CannotDo
+  deriving (Show, Eq)
 
-data Slot = Slot Integer String
+data Preferences = Preferences [(Counter, Availability)]
+  deriving Show
+
+data Slot = Slot Integer String Preferences
   deriving Show
 
 data Counter = Counter String
-  deriving Show
+  deriving (Show, Eq)
 
 data Rota = Rota [(Slot, [Counter])]
   deriving Show
 
 
+allFree = Preferences []
+
+
+canDo :: Preferences -> Counter -> Bool
+canDo (Preferences ps) c = canDo' ps c
+  where canDo' [] c = True
+        canDo' ((c', p'):ps) c = if (c' == c)
+                                 then (if (p' == CannotDo) then False else True)
+                                 else (canDo' ps c)
+
+test_canDoGoodPrefs = TestCase $ assertEqual "CanDo Good Prefs"
+                                    True
+                                    (canDo (Preferences [(Counter "Alice", CannotDo)]) (Counter "Bob"))
+
+test_canDoBadPrefs = TestCase $ assertEqual "CanDo Bad Prefs"
+                                    False
+                                    (canDo (Preferences [(Counter "Alice", CannotDo)]) (Counter "Alice"))
+
+
+
 
 
 acceptable :: Slot -> [Counter] -> Bool
-acceptable (Slot n t) cs = (length cs) == (fromIntegral n)
+acceptable (Slot n t p) cs = ((length cs) == (fromIntegral n))
+                             && (all (canDo p) cs)
 
 test_acceptableMatch = TestCase $ assertEqual "Acceptable Good"
                                     True
-                                    (acceptable (Slot 1 "foo") [Counter "Alice"])
+                                    (acceptable (Slot 1 "foo" allFree) [Counter "Alice"])
 
 test_acceptableUnder = TestCase $ assertEqual "Acceptable Under"
                                     False
-                                    (acceptable (Slot 2 "foo") [Counter "Bob"])
+                                    (acceptable (Slot 2 "foo" allFree) [Counter "Bob"])
 
 test_acceptableOver = TestCase $ assertEqual "Acceptable Over"
                                     False
-                                    (acceptable (Slot 1 "foo") [Counter "Alice", Counter "Bob"])
+                                    (acceptable (Slot 1 "foo" allFree)
+                                        [Counter "Alice", Counter "Bob"])
+
+test_acceptableGoodPrefs = TestCase $ assertEqual "Acceptable Good Prefs"
+                                        True
+                                        (acceptable (Slot 1 "foo" (Preferences [(Counter "Alice", CannotDo)])) [Counter "Bob"])
+
+test_acceptableBadPrefs = TestCase $ assertEqual "Acceptable Bad Prefs"
+                                        False
+                                        (acceptable (Slot 1 "foo" (Preferences [(Counter "Alice", CannotDo)])) [Counter "Alice"])
 
 
 
@@ -51,10 +86,10 @@ test_noUsableRotas = TestCase $ assertEqual "No Usable Rotas"
                             0
                             (length (usableRotas counters slots))
   where counters = [Counter "Alice", Counter "Bob"]
-        slots = [Slot 5 "1st January", Slot 2 "2nd January"]
+        slots = [Slot 5 "1st January" allFree, Slot 2 "2nd January" allFree]
 
 test_usableRotas = TestCase $ assertEqual "2 Usable Rotas"
                             2
                             (length (usableRotas counters slots))
   where counters = [Counter "Alice", Counter "Bob"]
-        slots = [Slot 1 "1st January", Slot 2 "2nd January"]
+        slots = [Slot 1 "1st January" allFree, Slot 2 "2nd January" allFree]
