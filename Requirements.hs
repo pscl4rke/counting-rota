@@ -3,12 +3,18 @@ module Requirements where
 
 import Planning
 
+alice =     Counter "Alice"
+bob =       Counter "Bob"
+carol =     Counter "Carol"
+dave =      Counter "Dave"
+eve =       Counter "Eve"
+
 counters =
-    [ Counter "Alice"
-    , Counter "Bob"
-    , Counter "Carol"
-    , Counter "Dave"
-    , Counter "Eve"
+    [ alice
+    , bob
+    , carol
+    , dave
+    , eve
     ]
 
 slots =
