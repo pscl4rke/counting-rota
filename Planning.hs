@@ -23,8 +23,8 @@ allRotas cs ss = [ Rota assignments | assignments <- allRotas' cs ss ]
                                           , others <- allRotas' counters slots ]
 
 test_allRotas = TestCase $ assertEqual "allRotas"
-                            (length (allRotas counters slots))
                             16
+                            (length (allRotas counters slots))
   where counters = [Counter "Alice", Counter "Bob"]
         slots = [Slot 5 "1st January", Slot 2 "2nd January"]
 
@@ -32,16 +32,16 @@ acceptable :: Slot -> [Counter] -> Bool
 acceptable (Slot n t) cs = (length cs) == (fromIntegral n)
 
 test_acceptableMatch = TestCase $ assertEqual "Acceptable Good"
-                                    (acceptable (Slot 1 "foo") [Counter "Alice"])
                                     True
+                                    (acceptable (Slot 1 "foo") [Counter "Alice"])
 
 test_acceptableUnder = TestCase $ assertEqual "Acceptable Under"
-                                    (acceptable (Slot 2 "foo") [Counter "Bob"])
                                     False
+                                    (acceptable (Slot 2 "foo") [Counter "Bob"])
 
 test_acceptableOver = TestCase $ assertEqual "Acceptable Over"
-                                    (acceptable (Slot 1 "foo") [Counter "Alice", Counter "Bob"])
                                     False
+                                    (acceptable (Slot 1 "foo") [Counter "Alice", Counter "Bob"])
 
 usableRotas :: [Counter] -> [Slot] -> [Rota]
 usableRotas cs ss = filter validNumber $ allRotas cs ss
