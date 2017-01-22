@@ -12,10 +12,10 @@ allTests =
     [ Set.test_powersetEmpty
     , Set.test_powersetOne
     , Set.test_powersetThree
-    , Planning.test_allRotas
     , Planning.test_acceptableMatch
     , Planning.test_acceptableUnder
     , Planning.test_acceptableOver
+    , Planning.test_noUsableRotas
     , Planning.test_usableRotas
     ]
 

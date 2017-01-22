@@ -5,6 +5,9 @@ import Set
 
 import Test.HUnit
 
+
+
+
 data Slot = Slot Integer String
   deriving Show
 
@@ -14,19 +17,8 @@ data Counter = Counter String
 data Rota = Rota [(Slot, [Counter])]
   deriving Show
 
-allRotas :: [Counter] -> [Slot] -> [Rota]
-allRotas cs ss = [ Rota assignments | assignments <- allRotas' cs ss ]
-  where allRotas' counters [] = []
-        allRotas' counters (slot:[]) = [ [(slot, cs)] | cs <- powerset counters ]
-        allRotas' counters (slot:slots) = [ (slot, cs):others
-                                          | cs <- powerset counters
-                                          , others <- allRotas' counters slots ]
 
-test_allRotas = TestCase $ assertEqual "allRotas"
-                            16
-                            (length (allRotas counters slots))
-  where counters = [Counter "Alice", Counter "Bob"]
-        slots = [Slot 5 "1st January", Slot 2 "2nd January"]
+
 
 acceptable :: Slot -> [Counter] -> Bool
 acceptable (Slot n t) cs = (length cs) == (fromIntegral n)
@@ -43,12 +35,25 @@ test_acceptableOver = TestCase $ assertEqual "Acceptable Over"
                                     False
                                     (acceptable (Slot 1 "foo") [Counter "Alice", Counter "Bob"])
 
-usableRotas :: [Counter] -> [Slot] -> [Rota]
-usableRotas cs ss = filter validNumber $ allRotas cs ss
-  where validNumber (Rota assignments) = all validAssignment assignments
-        validAssignment (slot, counters) = acceptable slot counters
 
-test_usableRotas = TestCase $ assertEqual "usableRotas"
+
+
+usableRotas :: [Counter] -> [Slot] -> [Rota]
+usableRotas cs ss = [ Rota assignments | assignments <- usableRotas' cs ss ]
+  where usableRotas' counters [] = []
+        usableRotas' counters (slot:[]) = [ [(slot, cs)] | cs <- validFor slot counters ]
+        usableRotas' counters (slot:slots) = [ (slot, cs):others
+                                             | cs <- validFor slot counters
+                                             , others <- usableRotas' counters slots ]
+        validFor slot counters = filter (acceptable slot) (powerset counters)
+
+test_noUsableRotas = TestCase $ assertEqual "No Usable Rotas"
+                            0
+                            (length (usableRotas counters slots))
+  where counters = [Counter "Alice", Counter "Bob"]
+        slots = [Slot 5 "1st January", Slot 2 "2nd January"]
+
+test_usableRotas = TestCase $ assertEqual "2 Usable Rotas"
                             2
                             (length (usableRotas counters slots))
   where counters = [Counter "Alice", Counter "Bob"]
