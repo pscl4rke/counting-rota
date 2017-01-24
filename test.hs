@@ -5,6 +5,7 @@ import System.Exit
 import Test.HUnit
 
 import qualified Planning
+import qualified Scoring
 import qualified Set
 
 allTests :: [Test]
@@ -21,6 +22,10 @@ allTests =
     , Planning.test_acceptableBadPrefs
     , Planning.test_noUsableRotas
     , Planning.test_usableRotas
+    , Scoring.test_pairOffEmpty
+    , Scoring.test_pairOffSingle
+    , Scoring.test_pairOffDouble
+    , Scoring.test_pairOffMany
     ]
 
 main = do

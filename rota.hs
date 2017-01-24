@@ -40,10 +40,13 @@ showNames (x:xs)        = (n x) ++ ", " ++ (showNames xs)
 
 
 display :: Rota -> IO ()
-display (Rota slotmap) = do
+display rota = do
+    putStrLn ""
+    putStrLn $ "Score: " ++ (show (overallScore rota))
     putStrLn (replicate 72 '=')
     putStrLn "            Counters              Not Available"
     putStrLn (replicate 72 '-')
+    let (Rota slotmap) = rota
     forM_ slotmap $ \(slot, theseCounters) -> do
         let Slot size description prefs = slot
         putStrLn $ (padRight 10 description)
