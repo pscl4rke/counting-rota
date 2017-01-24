@@ -45,5 +45,25 @@ twoWeeksInARow (Rota slotsAndCounters) = sum  [ countersInTwice weekA weekB
 
 
 
-overallScore :: Rota -> Int
-overallScore r = 10000 `div` (1 + (twoWeeksInARow r))
+idealMaxService :: [Counter] -> Rota -> Int
+idealMaxService cs (Rota slotsAndCounters) = (fromIntegral totalGaps) `div` totalCounters
+  where totalGaps = sum [ n | (Slot n _ _, _) <- slotsAndCounters ]
+        totalCounters = length cs
+
+
+
+aboveAndBeyond :: [Counter] -> Rota -> Int
+--aboveAndBeyond allCounters (Rota xs) = sum $ map aboveInSlot xs
+--  where aboveInSlot (_, counters) = sum $ map aboveForCounter counters
+--        aboveForCounter counter
+aboveAndBeyond allCounters rota = sum $ map (aboveForCounter rota) allCounters
+  where aboveForCounter rota counter = 0 `max` (timesServed counter rota)
+        timesServed counter (Rota slotsAndCounters) = length [ slot
+                                     | (slot, counters) <- slotsAndCounters
+                                     , counter `elem` counters ]
+
+
+
+
+overallScore :: [Counter] -> Rota -> Int
+overallScore cs r = 10000 `div` (1 + (twoWeeksInARow r) + (aboveAndBeyond cs r))
