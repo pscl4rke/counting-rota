@@ -8,14 +8,8 @@ module Scoring where
 
 -- ROADMAP
 
--- Currently this has an integer score where bigger numbers are better.
--- There is a somewhat hacky way of counting up the number of things that
--- are wrong with a rota and then dividing 10000 by that.
-
--- It seems cleaner to flick it round the other way: count up the number
--- of "hits" or "strikes" that mark a rota as bad, such that smaller
--- numbers are better.  There could even be a weighting system, such that
--- some strikes are more influencial than others.
+-- I need a weighting mechanism to make some strikes more influencial
+-- than others.
 
 -- Possibly there could be value in a ScoreBoard type that tracks all the
 -- subscores, instead of immediately combining them into one.  This could
@@ -89,5 +83,5 @@ aboveAndBeyond allCounters rota = sum $ map (aboveForCounter rota) allCounters
 
 
 
-overallScore :: [Counter] -> Rota -> Int
-overallScore cs r = 10000 `div` (1 + (twoWeeksInARow r) + (aboveAndBeyond cs r))
+overallStrikes :: [Counter] -> Rota -> Int
+overallStrikes cs r = (twoWeeksInARow r) + (aboveAndBeyond cs r)

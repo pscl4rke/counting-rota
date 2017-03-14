@@ -42,7 +42,7 @@ showNames (x:xs)        = (n x) ++ ", " ++ (showNames xs)
 display :: [Counter] -> Rota -> IO ()
 display allCounters rota = do
     putStrLn ""
-    putStrLn $ "Score: " ++ (show (overallScore allCounters rota))
+    putStrLn $ "Score: " ++ (show (overallStrikes allCounters rota))
     putStrLn (replicate 72 '=')
     putStrLn "            Counters              Not Available"
     putStrLn (replicate 72 '-')
@@ -63,6 +63,6 @@ sortOn f =
 
 main :: IO ()
 main = do
-    let rotas = reverse $ sortOn (overallScore counters) $ usableRotas counters slots
+    let rotas = sortOn (overallStrikes counters) $ usableRotas counters slots
     forM_ (take 5 rotas) $ \rota -> display counters rota
     --putStrLn $ show $ length rotas
