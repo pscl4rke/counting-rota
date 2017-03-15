@@ -23,4 +23,6 @@ slots =
     , Slot 2 "3rd Jan" allFree
     , Slot 2 "4th Jan" allFree
     , Slot 3 "5th Jan" allFree
+    , Slot 2 "6th Jan" allFree
+    , Slot 2 "7th Jan" allFree
     ]
