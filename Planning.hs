@@ -93,3 +93,27 @@ test_usableRotas = TestCase $ assertEqual "2 Usable Rotas"
                             (length (usableRotas counters slots))
   where counters = [Counter "Alice", Counter "Bob"]
         slots = [Slot 1 "1st January" allFree, Slot 2 "2nd January" allFree]
+
+
+
+slotsToFill :: Rota -> Int
+slotsToFill (Rota slots) = length slots
+
+
+
+countingSets :: Rota -> [[Counter]]
+countingSets (Rota slotpairs) = map countingSet slotpairs
+  where countingSet (_slot, counters) = counters
+
+
+
+contains :: Eq a => [a] -> a -> Bool
+contains [] _ = False
+contains (x:xs) y | x == y = True
+                  | otherwise = contains xs y
+
+
+
+pairTogether :: Rota -> Counter -> Counter -> Int
+pairTogether r c1 c2 = length (filter containsThePair (countingSets r))
+  where containsThePair cs = (cs `contains` c1) && (cs `contains` c2)

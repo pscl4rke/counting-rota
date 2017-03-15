@@ -83,5 +83,19 @@ aboveAndBeyond allCounters rota = sum $ map (aboveForCounter rota) allCounters
 
 
 
+ideally :: [Counter] -> Rota -> Int
+ideally cs r = 1 + ((slotsToFill r) `div` ((length cs) * ((length cs) - 1)))
+
+
+
+partnerVariety :: [Counter] -> Rota -> Int
+partnerVariety cs r = (sum [over r c1 c2 | c1 <- cs, c2 <- cs]) `div` 2
+  where over r c1 c2 = 0 `max` ((pairTogether r c1 c2) - (ideally cs r))
+
+
+
+
 overallStrikes :: [Counter] -> Rota -> Int
-overallStrikes cs r = (twoWeeksInARow r) + (aboveAndBeyond cs r)
+overallStrikes cs r = (twoWeeksInARow r)
+                    + (aboveAndBeyond cs r)
+                    + (partnerVariety cs r)
