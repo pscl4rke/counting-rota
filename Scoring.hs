@@ -6,20 +6,6 @@ module Scoring where
 
 
 
--- ROADMAP
-
--- I need a weighting mechanism to make some strikes more influencial
--- than others.
-
--- Possibly there could be value in a ScoreBoard type that tracks all the
--- subscores, instead of immediately combining them into one.  This could
--- be a useful thing to display, especially when debugging why some rotas
--- appear in unexpected orders.
-
-
-
-
-
 import  Data.List (intersect)
 
 import Planning
