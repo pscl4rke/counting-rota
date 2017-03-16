@@ -71,7 +71,8 @@ aboveAndBeyond :: [Counter] -> Rota -> Int
 --  where aboveInSlot (_, counters) = sum $ map aboveForCounter counters
 --        aboveForCounter counter
 aboveAndBeyond allCounters rota = sum $ map (aboveForCounter rota) allCounters
-  where aboveForCounter rota counter = 0 `max` (timesServed counter rota)
+  where aboveForCounter rota counter = 0 `max` ((timesServed counter rota)
+                                                - (idealMaxService allCounters rota))
         timesServed counter (Rota slotsAndCounters) = length [ slot
                                      | (slot, counters) <- slotsAndCounters
                                      , counter `elem` counters ]
