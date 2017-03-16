@@ -107,13 +107,6 @@ countingSets (Rota slotpairs) = map countingSet slotpairs
 
 
 
-contains :: Eq a => [a] -> a -> Bool
-contains [] _ = False
-contains (x:xs) y | x == y = True
-                  | otherwise = contains xs y
-
-
-
 pairTogether :: Rota -> Counter -> Counter -> Int
 pairTogether r c1 c2 = length (filter containsThePair (countingSets r))
-  where containsThePair cs = (cs `contains` c1) && (cs `contains` c2)
+  where containsThePair cs = (c1 `elem` cs) && (c2 `elem` cs)
