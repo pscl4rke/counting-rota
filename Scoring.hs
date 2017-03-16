@@ -26,6 +26,16 @@ import Planning
 
 import Test.HUnit
 
+
+
+data Scorecard = Scorecard
+    { scoreTwoWeeksInARow :: Int
+    , scoreAboveAndBeyond :: Int
+    , scorePartnerVariety :: Int
+    }
+
+
+
 pairOff :: [a] -> [(a, a)]
 pairOff [] = []
 pairOff (x:[]) = []
@@ -95,7 +105,18 @@ partnerVariety cs r = (sum [over r c1 c2 | c1 <- cs, c2 <- cs]) `div` 2
 
 
 
+scorecard :: [Counter] -> Rota -> Scorecard
+scorecard cs r = Scorecard {
+                    scoreTwoWeeksInARow = (twoWeeksInARow r),
+                    scoreAboveAndBeyond = 2 * (aboveAndBeyond cs r),
+                    scorePartnerVariety = (partnerVariety cs r)
+                    }
+
+
+
+scoreTotal :: Scorecard -> Int
+scoreTotal (Scorecard a b c) = a + b + c
+
+
 overallStrikes :: [Counter] -> Rota -> Int
-overallStrikes cs r = (twoWeeksInARow r)
-                    + (aboveAndBeyond cs r)
-                    + (partnerVariety cs r)
+overallStrikes cs r = scoreTotal $ scorecard cs r

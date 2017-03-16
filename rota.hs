@@ -39,10 +39,21 @@ showNames (x:xs)        = (n x) ++ ", " ++ (showNames xs)
 
 
 
+displayScorecard :: Scorecard -> IO ()
+displayScorecard card = do
+    putStrLn $ "Two weeks in a row:" ++ show (scoreTwoWeeksInARow card)
+    putStrLn $ "Above and beyond:" ++ show (scoreAboveAndBeyond card)
+    putStrLn $ "Partner variety:" ++ show (scorePartnerVariety card)
+    putStrLn $ "TOTAL:" ++ show (scoreTotal card)
+
+
+
+
+
 display :: [Counter] -> Rota -> IO ()
 display allCounters rota = do
     putStrLn ""
-    putStrLn $ "Score: " ++ (show (overallStrikes allCounters rota))
+    displayScorecard $ scorecard allCounters rota
     putStrLn (replicate 72 '=')
     putStrLn "            Counters              Not Available"
     putStrLn (replicate 72 '-')
