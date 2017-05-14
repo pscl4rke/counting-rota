@@ -1,7 +1,9 @@
 
 import Control.Monad (forM_)
 import Data.List (sortBy)
+import Data.Maybe (fromMaybe, listToMaybe)
 import Data.Ord (comparing)
+import System.Environment (getArgs)
 
 import Planning
 import Requirements
@@ -74,6 +76,11 @@ sortOn f =
 
 main :: IO ()
 main = do
-    let rotas = sortOn (overallStrikes counters) $ usableRotas counters slots
-    forM_ (take 5 rotas) $ \rota -> display counters rota
-    --putStrLn $ show $ length rotas
+    args <- getArgs
+    let command = fromMaybe "help" $ listToMaybe args
+    case command of
+        "rota" -> do
+            let rotas = sortOn (overallStrikes counters) $ usableRotas counters slots
+            forM_ (take 5 rotas) $ \rota -> display counters rota
+        _ -> do
+            putStrLn "Want to write help here"
