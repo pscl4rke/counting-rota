@@ -23,6 +23,11 @@ data Rota = Rota [(Slot, [Counter])]
   deriving Show
 
 
+blankRota :: Integer -> [String] -> Rota
+blankRota needed names = Rota [((defaultSlot name), []) | name <- names]
+  where defaultSlot name = Slot needed name (Preferences [])
+
+
 allFree = Preferences []
 
 

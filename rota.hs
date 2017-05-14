@@ -5,6 +5,7 @@ import Data.Maybe (fromMaybe, listToMaybe)
 import Data.Ord (comparing)
 import System.Environment (getArgs)
 
+import Dating
 import Planning
 import Requirements
 import Scoring
@@ -54,8 +55,6 @@ displayScorecard card = do
 
 display :: [Counter] -> Rota -> IO ()
 display allCounters rota = do
-    putStrLn ""
-    displayScorecard $ scorecard allCounters rota
     putStrLn (replicate 72 '=')
     putStrLn "            Counters              Not Available"
     putStrLn (replicate 72 '-')
@@ -81,6 +80,12 @@ main = do
     case command of
         "rota" -> do
             let rotas = sortOn (overallStrikes counters) $ usableRotas counters slots
-            forM_ (take 5 rotas) $ \rota -> display counters rota
+            forM_ (take 5 rotas) $ \rota -> do
+                putStrLn ""
+                displayScorecard $ scorecard counters rota
+                display counters rota
+        "blank" -> do
+            sundays <- nextFifteenSundays
+            display counters (blankRota 2 sundays)
         _ -> do
             putStrLn "Want to write help here"
