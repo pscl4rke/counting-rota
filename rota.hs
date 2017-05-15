@@ -56,15 +56,18 @@ displayScorecard card = do
 display :: [Counter] -> Rota -> IO ()
 display allCounters rota = do
     putStrLn (replicate 72 '=')
-    putStrLn "            Counters              Not Available"
-    putStrLn (replicate 72 '-')
+    putStrLn "|               | Counting                  | Not Available            |"
+    putStrLn (replicate 72 '=')
     let (Rota slotmap) = rota
     forM_ slotmap $ \(slot, theseCounters) -> do
         let Slot size description prefs = slot
-        putStrLn $ (padRight 10 description)
-                    ++ "  "
-                    ++ (padLeft 22 (showNames theseCounters))
-                    ++ (showNames (available prefs counters))
+        putStrLn $ "| "
+                    ++ (padRight 12 description)
+                    ++ "  | "
+                    ++ (padLeft 26 (showNames theseCounters))
+                    ++ "| "
+                    ++ (padLeft 25 (showNames (available prefs counters)))
+                    ++ "|"
     putStrLn (replicate 72 '=')
   where available prefs counters = filter (not . (canDo prefs)) counters
 
