@@ -1,5 +1,6 @@
-rota
-test
-*.hi
-*.o
-*.prof
+#rota
+#test
+#*.hi
+#*.o
+#*.prof
+dist
