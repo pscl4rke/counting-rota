@@ -18,7 +18,7 @@ counters =
     ]
 
 slots =
-    [ Slot 2 "1st Jan" allFree
+    [ Slot 2 "1st Jan" (Preferences [(carol, MustDo)])
     , Slot 1 "2nd Jan" allFree
     , Slot 2 "3rd Jan" allFree
     , Slot 2 "4th Jan" allFree

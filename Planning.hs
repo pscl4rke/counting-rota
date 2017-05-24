@@ -7,7 +7,7 @@ import Test.HUnit
 
 
 
-data Availability = CanDo | CannotDo
+data Availability = MustDo | CanDo | CannotDo
   deriving (Show, Eq)
 
 data Preferences = Preferences [(Counter, Availability)]
@@ -50,9 +50,20 @@ test_canDoBadPrefs = TestCase $ assertEqual "CanDo Bad Prefs"
 
 
 
+allMustDos :: Preferences -> [Counter] -> Bool
+allMustDos (Preferences ps) cs = all (`elem` cs) needed
+  where needed = [c | (c, av) <- ps, mustDo av]
+        mustDo MustDo = True
+        mustDo _ = False
+
+
+
+
+
 acceptable :: Slot -> [Counter] -> Bool
 acceptable (Slot n t p) cs = ((length cs) == (fromIntegral n))
                              && (all (canDo p) cs)
+                             && allMustDos p cs
 
 test_acceptableMatch = TestCase $ assertEqual "Acceptable Good"
                                     True
