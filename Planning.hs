@@ -3,7 +3,7 @@ module Planning where
 
 import Set
 
-import Test.HUnit
+import Test.Tasty.HUnit
 
 
 
@@ -38,11 +38,13 @@ canDo (Preferences ps) c = canDo' ps c
                                  then (if (p' == CannotDo) then False else True)
                                  else (canDo' ps c)
 
-test_canDoGoodPrefs = TestCase $ assertEqual "CanDo Good Prefs"
+test_canDoGoodPrefs = testCase "CanDo Good Prefs" $ assertEqual
+                                    "Error occurred"
                                     True
                                     (canDo (Preferences [(Counter "Alice", CannotDo)]) (Counter "Bob"))
 
-test_canDoBadPrefs = TestCase $ assertEqual "CanDo Bad Prefs"
+test_canDoBadPrefs = testCase "CanDo Bad Prefs" $ assertEqual
+                                    "Error occurred"
                                     False
                                     (canDo (Preferences [(Counter "Alice", CannotDo)]) (Counter "Alice"))
 
@@ -65,24 +67,29 @@ acceptable (Slot n t p) cs = ((length cs) == (fromIntegral n))
                              && (all (canDo p) cs)
                              && allMustDos p cs
 
-test_acceptableMatch = TestCase $ assertEqual "Acceptable Good"
+test_acceptableMatch = testCase "Acceptable Good" $ assertEqual
+                                    "Error occurred"
                                     True
                                     (acceptable (Slot 1 "foo" allFree) [Counter "Alice"])
 
-test_acceptableUnder = TestCase $ assertEqual "Acceptable Under"
+test_acceptableUnder = testCase "Acceptable Under" $ assertEqual
+                                    "Error occurred"
                                     False
                                     (acceptable (Slot 2 "foo" allFree) [Counter "Bob"])
 
-test_acceptableOver = TestCase $ assertEqual "Acceptable Over"
+test_acceptableOver = testCase "Acceptable Over" $ assertEqual
+                                    "Error occurred"
                                     False
                                     (acceptable (Slot 1 "foo" allFree)
                                         [Counter "Alice", Counter "Bob"])
 
-test_acceptableGoodPrefs = TestCase $ assertEqual "Acceptable Good Prefs"
+test_acceptableGoodPrefs = testCase "Acceptable Good Prefs" $ assertEqual
+                                        "Error occurred"
                                         True
                                         (acceptable (Slot 1 "foo" (Preferences [(Counter "Alice", CannotDo)])) [Counter "Bob"])
 
-test_acceptableBadPrefs = TestCase $ assertEqual "Acceptable Bad Prefs"
+test_acceptableBadPrefs = testCase "Acceptable Bad Prefs" $ assertEqual
+                                        "Error occurred"
                                         False
                                         (acceptable (Slot 1 "foo" (Preferences [(Counter "Alice", CannotDo)])) [Counter "Alice"])
 
@@ -98,13 +105,15 @@ usableRotas cs ss = [ Rota assignments | assignments <- usableRotas' cs ss ]
                                              , others <- usableRotas' counters slots ]
         validFor slot counters = filter (acceptable slot) (powerset counters)
 
-test_noUsableRotas = TestCase $ assertEqual "No Usable Rotas"
+test_noUsableRotas = testCase "No Usable Rotas" $ assertEqual
+                            "Error occurred"
                             0
                             (length (usableRotas counters slots))
   where counters = [Counter "Alice", Counter "Bob"]
         slots = [Slot 5 "1st January" allFree, Slot 2 "2nd January" allFree]
 
-test_usableRotas = TestCase $ assertEqual "2 Usable Rotas"
+test_usableRotas = testCase "2 Usable Rotas" $ assertEqual
+                            "Error occurred"
                             2
                             (length (usableRotas counters slots))
   where counters = [Counter "Alice", Counter "Bob"]

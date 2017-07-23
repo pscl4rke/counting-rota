@@ -5,10 +5,10 @@ version: 0.1.0.0
 executable rota
     main-is: rota.hs
     build-depends: base
-    build-depends: HUnit
     build-depends: old-locale
     build-depends: time
 executable test
     main-is: test.hs
     build-depends: base
-    build-depends: HUnit
+    build-depends: tasty
+    build-depends: tasty-hunit

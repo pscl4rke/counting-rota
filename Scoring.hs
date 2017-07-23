@@ -4,13 +4,11 @@ module Scoring where
 
 
 
-
-
 import  Data.List (intersect)
 
 import Planning
 
-import Test.HUnit
+import Test.Tasty.HUnit
 
 
 
@@ -27,19 +25,23 @@ pairOff [] = []
 pairOff (x:[]) = []
 pairOff (x:y:ys) = (x, y):(pairOff (y:ys))
 
-test_pairOffEmpty = TestCase $ assertEqual "PairOff Empty List"
+test_pairOffEmpty = testCase "PairOff Empty List" $ assertEqual
+                                    "Error occurred"
                                     ([] :: [(Bool, Bool)])
                                     (pairOff [])
 
-test_pairOffSingle = TestCase $ assertEqual "PairOff Single Element"
+test_pairOffSingle = testCase "PairOff Single Element" $ assertEqual
+                                    "Error occurred"
                                     []
                                     (pairOff ["foo"])
 
-test_pairOffDouble = TestCase $ assertEqual "PairOff Double Element"
+test_pairOffDouble = testCase "PairOff Double Element" $ assertEqual
+                                    "Error occurred"
                                     [("foo", "bar")]
                                     (pairOff ["foo", "bar"])
 
-test_pairOffMany = TestCase $ assertEqual "PairOff Many Elements"
+test_pairOffMany = testCase "PairOff Many Elements" $ assertEqual
+                                    "Error occurred"
                                     [(0, 1), (1, 4), (4, 9), (9, 16)]
                                     (pairOff [0, 1, 4, 9, 16])
 

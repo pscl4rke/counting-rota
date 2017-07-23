@@ -1,14 +1,10 @@
 
---module Test where
-
-import System.Exit
-import Test.HUnit
+import Test.Tasty
 
 import qualified Planning
 import qualified Scoring
 import qualified Set
 
-allTests :: [Test]
 allTests =
     [ Set.test_powersetEmpty
     , Set.test_powersetOne
@@ -28,7 +24,4 @@ allTests =
     , Scoring.test_pairOffMany
     ]
 
-main = do
-    counts <- runTestTT $ TestList allTests
-    let wentBad = ((errors counts) + (failures counts)) > 0
-    if wentBad then exitFailure else exitSuccess
+main = defaultMain $ testGroup "All Tests!" allTests
