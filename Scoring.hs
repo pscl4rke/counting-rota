@@ -13,10 +13,22 @@ import Test.Tasty.HUnit
 
 
 data Scorecard = Scorecard
-    { scoreTwoWeeksInARow :: Int
+    { scoreTryingToAvoid :: Int
+    , scoreTwoWeeksInARow :: Int
     , scoreAboveAndBeyond :: Int
     , scorePartnerVariety :: Int
     }
+
+
+
+tryingToAvoid :: Rota -> Int
+tryingToAvoid (Rota slotsAndCounters) = sum (map tryingToAvoid' slotsAndCounters)
+  where tryingToAvoid' (slot, counters) = sum (map (tryingToAvoid'' slot) counters)
+        tryingToAvoid'' (Slot _ _ (Preferences prefs)) counter = sum (map (tryingToAvoid''' counter) prefs)
+        tryingToAvoid''' counter (counter', availability') = case availability' of
+                                                    WantsToAvoid -> if (counter == counter') then 1 else 0
+                                                    _ -> 0
+
 
 
 
@@ -96,6 +108,7 @@ partnerVariety cs r = (sum [over r c1 c2 | c1 <- cs, c2 <- cs]) `div` 2
 
 scorecard :: [Counter] -> Rota -> Scorecard
 scorecard cs r = Scorecard {
+                    scoreTryingToAvoid  = 4 * (tryingToAvoid r),
                     scoreTwoWeeksInARow = (twoWeeksInARow r),
                     scoreAboveAndBeyond = 2 * (aboveAndBeyond cs r),
                     scorePartnerVariety = (partnerVariety cs r)
@@ -104,7 +117,7 @@ scorecard cs r = Scorecard {
 
 
 scoreTotal :: Scorecard -> Int
-scoreTotal (Scorecard a b c) = a + b + c
+scoreTotal (Scorecard a b c d) = a + b + c + d
 
 
 overallStrikes :: [Counter] -> Rota -> Int

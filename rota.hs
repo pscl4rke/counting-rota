@@ -44,6 +44,7 @@ showNames (x:xs)        = (n x) ++ ", " ++ (showNames xs)
 
 displayScorecard :: Scorecard -> IO ()
 displayScorecard card = do
+    putStrLn $ "Trying to avoid:" ++ show (scoreTryingToAvoid card)
     putStrLn $ "Two weeks in a row:" ++ show (scoreTwoWeeksInARow card)
     putStrLn $ "Above and beyond:" ++ show (scoreAboveAndBeyond card)
     putStrLn $ "Partner variety:" ++ show (scorePartnerVariety card)

@@ -7,7 +7,7 @@ import Test.Tasty.HUnit
 
 
 
-data Availability = MustDo | CanDo | CannotDo
+data Availability = MustDo | CanDo | WantsToAvoid | CannotDo
   deriving (Show, Eq)
 
 data Preferences = Preferences [(Counter, Availability)]
