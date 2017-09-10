@@ -7,6 +7,7 @@ import System.Environment (getArgs)
 
 import Dating
 import Planning
+import Presenting
 import Requirements
 import Scoring
 
@@ -31,12 +32,9 @@ padRight n cs = (replicate (n - (length cs)) ' ') ++ cs
 
 
 
-n (Counter name) = name
 showNames :: [Counter] -> String
-showNames []            = ""
-showNames (x:[])        = (n x)
-showNames (x:y:[])      = (n x) ++ " & " ++ (n y)
-showNames (x:xs)        = (n x) ++ ", " ++ (showNames xs)
+showNames counters = showStrings $ map nameOf counters
+  where nameOf (Counter name) = name
 
 
 
