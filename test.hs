@@ -32,7 +32,11 @@ scoringTests =
     ]
 
 presentingTests =
-    [ Presenting.test_showStringsNone
+    [ Presenting.test_padLeftNormal
+    , Presenting.test_padLeftLong
+    , Presenting.test_padRightNormal
+    , Presenting.test_padRightLong
+    , Presenting.test_showStringsNone
     , Presenting.test_showStringsOne
     , Presenting.test_showStringsTwo
     , Presenting.test_showStringsThree

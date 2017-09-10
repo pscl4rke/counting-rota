@@ -14,23 +14,6 @@ import Scoring
 
 
 
-padLeft :: Int -> String -> String
-padLeft n [] = replicate n ' '
-padLeft n (c:cs) = c:(padLeft (n - 1) cs)
-
--- FIXME
--- note in old HUnit format
--- annoyingly import errors stop me from including this
---test_padLeftNormal = TestCase $ assertEqual "PadLeft Normal"
---                                    "Foo Bar   "
---                                    (padLeft 10 "Foo Bar")
-
-padRight :: Int -> String -> String
-padRight n cs = (replicate (n - (length cs)) ' ') ++ cs
-
-
-
-
 
 showNames :: [Counter] -> String
 showNames counters = showStrings $ map nameOf counters
