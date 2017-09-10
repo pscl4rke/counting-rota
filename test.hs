@@ -1,9 +1,9 @@
 
 import Test.Tasty
 
+import qualified Set
 import qualified Planning
 import qualified Scoring
-import qualified Set
 
 setTests =
     [ Set.test_powersetEmpty
