@@ -22,7 +22,6 @@ showNames counters = showStrings $ map nameOf counters
 
 
 
-
 displayScorecard :: Scorecard -> IO ()
 displayScorecard card = do
     putStrLn $ "Trying to avoid:" ++ show (scoreTryingToAvoid card)
@@ -30,6 +29,22 @@ displayScorecard card = do
     putStrLn $ "Above and beyond:" ++ show (scoreAboveAndBeyond card)
     putStrLn $ "Partner variety:" ++ show (scorePartnerVariety card)
     putStrLn $ "TOTAL:" ++ show (scoreTotal card)
+
+
+
+
+showNotAvailable :: Preferences -> String
+showNotAvailable prefs = showStrings (map showSomething (notAvailable prefs))
+  where notAvailable (Preferences abc) = filter worthShowing abc
+        worthShowing (counter, availability) = case availability of
+            CannotDo -> True
+            WantsToAvoid -> True
+            _ -> False
+        showSomething (counter, availability) = case availability of
+            CannotDo -> nameOf counter
+            WantsToAvoid -> (nameOf counter) ++ "?"
+            _ -> "ERROR!"
+        nameOf (Counter x) = x
 
 
 
@@ -48,15 +63,22 @@ display allCounters rota = do
                     ++ "  | "
                     ++ (padLeft 24 (showNames theseCounters))
                     ++ "| "
-                    ++ (padLeft 27 (showNames (available prefs counters)))
+                    ++ (padLeft 27 (showNotAvailable prefs))
                     ++ "|"
     putStrLn (replicate 72 '=')
-  where available prefs counters = filter (not . (canDo prefs)) counters
+
+
+
+
 
 -- BACKPORTED
 sortOn :: Ord b => (a -> b) -> [a] -> [a]
 sortOn f =
   map snd . sortBy (comparing fst) . map (\x -> let y = f x in y `seq` (y, x))
+
+
+
+
 
 main :: IO ()
 main = do

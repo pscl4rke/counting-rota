@@ -8,10 +8,13 @@ import Planning
 allExcept :: [Counter] -> Preferences
 allExcept cs = Preferences [(c, CannotDo) | c <- cs]
 
-without :: [Counter] -> [Counter] -> Preferences
-without musts cannots = Preferences (mustpairs ++ cannotpairs)
+without :: [Counter] -> [UnsureAbout Counter] -> Preferences
+without musts unsurenots = Preferences (mustpairs ++ unsurenotpairs)
   where mustpairs = [(c, MustDo) | c <- musts]
-        cannotpairs = [(c, CannotDo) | c <- cannots]
+        unsurenotpairs = [(f uc) | uc <- unsurenots]
+        f (Definitely c) = (c, CannotDo)
+        f (Perhaps c) = (c, WantsToAvoid)
+
 
 
 
@@ -34,7 +37,7 @@ slots =
     , Slot 1 "2nd Jan" allFree
     , Slot 2 "3rd Jan" allFree
     , Slot 2 "4th Jan" (allExcept [dave, eve])
-    , Slot 3 "5th Jan" allFree
-    , Slot 2 "6th Jan" allFree
+    , Slot 3 "5th Jan" ([] `without` [(Definitely alice)])
+    , Slot 2 "6th Jan" ([] `without` [(Perhaps bob)])
     , Slot 2 "7th Jan" allFree
     ]
