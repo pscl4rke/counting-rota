@@ -47,6 +47,10 @@ parsingTests =
     [ Parsing.test_parseCounterEmpty
     , Parsing.test_parseCounterNoMatches
     , Parsing.test_parseCounterAMatch
+    , Parsing.test_parseUnsureAboutCounterEmpty
+    , Parsing.test_parseUnsureAboutCounterNoMatches
+    , Parsing.test_parseUnsureAboutCounterDefinite
+    , Parsing.test_parseUnsureAboutCounterPerhaps
     ]
 
 allTests =

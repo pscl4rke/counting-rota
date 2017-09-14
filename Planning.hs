@@ -7,6 +7,7 @@ import Test.Tasty.HUnit
 
 
 data UnsureAbout a = Definitely a | Perhaps a
+  deriving (Show, Eq)
 
 data Availability = MustDo | CanDo | WantsToAvoid | CannotDo
   deriving (Show, Eq)

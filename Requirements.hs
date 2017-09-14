@@ -33,17 +33,17 @@ counters =
     , eve
     ]
 
-p :: String -> Counter
-p name = case (parseCounter counters name) of
-    Just counter -> counter
+p :: String -> UnsureAbout Counter
+p name = case (parseUnsureAboutCounter counters name) of
+    Just unsurecounter -> unsurecounter
     Nothing -> error ("Cannot parse " ++ name)
 
 slots =
-    [ Slot 2 "1st Jan" ([p "Carol"] `without` [])
+    [ Slot 2 "1st Jan" ([carol] `without` [])
     , Slot 1 "2nd Jan" allFree
     , Slot 2 "3rd Jan" allFree
-    , Slot 2 "4th Jan" (allExcept [p "Dave", p "Eve"])
-    , Slot 3 "5th Jan" ([] `without` [(Definitely (p "Alice"))])
-    , Slot 2 "6th Jan" ([] `without` [(Perhaps (p "Bob"))])
+    , Slot 2 "4th Jan" (allExcept [dave, eve])
+    , Slot 3 "5th Jan" ([] `without` [p "Alice"])
+    , Slot 2 "6th Jan" ([] `without` [p "Bob?"])
     , Slot 2 "7th Jan" allFree
     ]

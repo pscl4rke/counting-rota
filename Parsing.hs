@@ -30,3 +30,38 @@ test_parseCounterAMatch = testCase "parseCounter A Match" $ assertEqual
                                     (Just (Counter "Bar"))
                                     (parseCounter cs "Bar")
                                     where cs = [Counter "Bar", Counter "Baz"]
+
+
+
+
+parseUnsureAboutCounter :: [Counter] -> String -> Maybe (UnsureAbout Counter)
+parseUnsureAboutCounter [] _ = Nothing
+parseUnsureAboutCounter (c:cs) name = let (Counter name') = c
+                                      in if (name == name')
+                                         then (Just (Definitely c))
+                                         else if (name == (name' ++ "?"))
+                                              then (Just (Perhaps c))
+                                              else (parseUnsureAboutCounter cs name)
+
+test_parseUnsureAboutCounterEmpty = testCase "parseUnsureAboutCounter Empty" $ assertEqual
+                                            "Error occurred"
+                                            Nothing
+                                            (parseUnsureAboutCounter [] "Foo")
+
+test_parseUnsureAboutCounterNoMatches = testCase "parseUnsureAboutCounter No Matches" $ assertEqual
+                                            "Error occurred"
+                                            Nothing
+                                            (parseUnsureAboutCounter cs "Foo")
+                                            where cs = [Counter "Bar", Counter "Baz"]
+
+test_parseUnsureAboutCounterDefinite = testCase "parseUnsureAboutCounter Definite" $ assertEqual
+                                            "Error occurred"
+                                            (Just (Definitely (Counter "Baz")))
+                                            (parseUnsureAboutCounter cs "Baz")
+                                            where cs = [Counter "Bar", Counter "Baz"]
+
+test_parseUnsureAboutCounterPerhaps = testCase "parseUnsureAboutCounter Perhaps" $ assertEqual
+                                            "Error occurred"
+                                            (Just (Perhaps (Counter "Baz")))
+                                            (parseUnsureAboutCounter cs "Baz?")
+                                            where cs = [Counter "Bar", Counter "Baz"]
