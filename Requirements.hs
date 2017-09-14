@@ -1,6 +1,7 @@
 
 module Requirements where
 
+import Parsing
 import Planning
 
 
@@ -32,12 +33,17 @@ counters =
     , eve
     ]
 
+p :: String -> Counter
+p name = case (parseCounter counters name) of
+    Just counter -> counter
+    Nothing -> error ("Cannot parse " ++ name)
+
 slots =
-    [ Slot 2 "1st Jan" ([carol] `without` [])
+    [ Slot 2 "1st Jan" ([p "Carol"] `without` [])
     , Slot 1 "2nd Jan" allFree
     , Slot 2 "3rd Jan" allFree
-    , Slot 2 "4th Jan" (allExcept [dave, eve])
-    , Slot 3 "5th Jan" ([] `without` [(Definitely alice)])
-    , Slot 2 "6th Jan" ([] `without` [(Perhaps bob)])
+    , Slot 2 "4th Jan" (allExcept [p "Dave", p "Eve"])
+    , Slot 3 "5th Jan" ([] `without` [(Definitely (p "Alice"))])
+    , Slot 2 "6th Jan" ([] `without` [(Perhaps (p "Bob"))])
     , Slot 2 "7th Jan" allFree
     ]

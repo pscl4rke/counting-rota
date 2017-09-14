@@ -5,6 +5,7 @@ import qualified Set
 import qualified Planning
 import qualified Scoring
 import qualified Presenting
+import qualified Parsing
 
 setTests =
     [ Set.test_powersetEmpty
@@ -42,11 +43,18 @@ presentingTests =
     , Presenting.test_showStringsThree
     ]
 
+parsingTests =
+    [ Parsing.test_parseCounterEmpty
+    , Parsing.test_parseCounterNoMatches
+    , Parsing.test_parseCounterAMatch
+    ]
+
 allTests =
     [ testGroup "Set.hs" setTests
     , testGroup "Planning.hs" planningTests
     , testGroup "Scoring.hs" scoringTests
     , testGroup "Presenting.hs" presentingTests
+    , testGroup "Parsing.hs" parsingTests
     ]
 
 main = defaultMain $ testGroup "counting-rota" allTests
