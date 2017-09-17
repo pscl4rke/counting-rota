@@ -51,6 +51,20 @@ parsingTests =
     , Parsing.test_parseUnsureAboutCounterNoMatches
     , Parsing.test_parseUnsureAboutCounterDefinite
     , Parsing.test_parseUnsureAboutCounterPerhaps
+    , Parsing.test_separateOnMultiple
+    , Parsing.test_stripBlank
+    , Parsing.test_stripNone
+    , Parsing.test_stripBothSides
+    , Parsing.test_splitIntoWordsEmpty
+    , Parsing.test_splitIntoWordsOne
+    , Parsing.test_splitIntoWordsOneWS
+    , Parsing.test_splitIntoWordsOneMulti
+    , Parsing.test_splitIntoWordsTwoClose
+    , Parsing.test_splitIntoWordsTwoFar
+    , Parsing.test_allJustEmpty
+    , Parsing.test_allJustAllGood
+    , Parsing.test_allJustOneBad
+    , Parsing.test_parseListOfUnsureAboutCounterNormal
     ]
 
 allTests =
