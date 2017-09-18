@@ -64,6 +64,8 @@ parsingTests =
     , Parsing.test_allJustEmpty
     , Parsing.test_allJustAllGood
     , Parsing.test_allJustOneBad
+    , Parsing.test_parseListOfCounterNormal
+    , Parsing.test_parseListOfCounterNotUnsure
     , Parsing.test_parseListOfUnsureAboutCounterNormal
     ]
 

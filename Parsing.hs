@@ -170,6 +170,25 @@ test_allJustOneBad = testCase "allJust One Bad" $ assertEqual
 
 
 
+parseListOfCounter :: [Counter] -> String -> Maybe [Counter]
+parseListOfCounter cs s = allJust $ map (parseCounter cs) (splitIntoWords s)
+
+test_parseListOfCounterNormal = testCase "parseListOfCounter Normal" $ assertEqual
+                                    "Error occurred"
+                                    (Just [Counter "Bar", Counter "Baz"])
+                                    (parseListOfCounter cs "Bar, Baz")
+                                        where cs = [Counter "Bar", Counter "Baz"]
+
+test_parseListOfCounterNotUnsure = testCase "parseListOfCounter Not Unsure" $ assertEqual
+                                    "Error occurred"
+                                    Nothing
+                                    (parseListOfCounter cs "Bar?, Baz")
+                                        where cs = [Counter "Bar", Counter "Baz"]
+
+
+
+
+
 parseListOfUnsureAboutCounter :: [Counter] -> String -> Maybe [(UnsureAbout Counter)]
 parseListOfUnsureAboutCounter cs s = allJust $ map (parseUnsureAboutCounter cs) (splitIntoWords s)
 
