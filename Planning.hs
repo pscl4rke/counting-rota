@@ -33,6 +33,18 @@ blankRota needed names = Rota [((defaultSlot name), []) | name <- names]
 allFree = Preferences []
 
 
+allExcept :: [Counter] -> Preferences
+allExcept cs = Preferences [(c, CannotDo) | c <- cs]
+
+
+without :: [Counter] -> [UnsureAbout Counter] -> Preferences
+without musts unsurenots = Preferences (mustpairs ++ unsurenotpairs)
+  where mustpairs = [(c, MustDo) | c <- musts]
+        unsurenotpairs = [(f uc) | uc <- unsurenots]
+        f (Definitely c) = (c, CannotDo)
+        f (Perhaps c) = (c, WantsToAvoid)
+
+
 canDo :: Preferences -> Counter -> Bool
 canDo (Preferences ps) c = canDo' ps c
   where canDo' [] c = True
