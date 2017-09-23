@@ -51,6 +51,7 @@ parsingTests =
     , Parsing.test_parseUnsureAboutCounterNoMatches
     , Parsing.test_parseUnsureAboutCounterDefinite
     , Parsing.test_parseUnsureAboutCounterPerhaps
+    , Parsing.test_separateOnSingle
     , Parsing.test_separateOnMultiple
     , Parsing.test_stripBlank
     , Parsing.test_stripNone
@@ -61,6 +62,7 @@ parsingTests =
     , Parsing.test_splitIntoWordsOneMulti
     , Parsing.test_splitIntoWordsTwoClose
     , Parsing.test_splitIntoWordsTwoFar
+    , Parsing.test_splitIntoWordsAmpersand
     , Parsing.test_allJustEmpty
     , Parsing.test_allJustAllGood
     , Parsing.test_allJustOneBad
