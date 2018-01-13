@@ -4,7 +4,6 @@ module Dating where
 import Data.Time.Calendar
 import Data.Time.Clock
 import Data.Time.Format
-import System.Locale
 
 
 prettify :: Day -> String
