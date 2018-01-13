@@ -4,3 +4,5 @@
 #*.o
 #*.prof
 dist
+.cabal-sandbox
+cabal.sandbox.config
