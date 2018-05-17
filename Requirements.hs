@@ -22,13 +22,13 @@ counters =
 
 q :: String -> [Counter]
 q names = case (parseListOfCounter counters names) of
-    Just counters -> counters
-    Nothing -> error ("Cannot parse counters: '" ++ names ++ "'")
+    Right counters -> counters
+    Left msg -> error ("Cannot parse counters: " ++ msg)
 
 p :: String -> [UnsureAbout Counter]
 p names = case (parseListOfUnsureAboutCounter counters names) of
-    Just unsurecounters -> unsurecounters
-    Nothing -> error ("Cannot parse unsure-about-counters: '" ++ names ++ "'")
+    Right unsurecounters -> unsurecounters
+    Left msg -> error ("Cannot parse availability: " ++ msg)
 
 slots =
     [ Slot 2 "1st Jan" (q "Carol" `without` p "")

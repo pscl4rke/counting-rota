@@ -64,9 +64,9 @@ parsingTests =
     , Parsing.test_splitIntoWordsTwoClose
     , Parsing.test_splitIntoWordsTwoFar
     , Parsing.test_splitIntoWordsAmpersand
-    , Parsing.test_allJustEmpty
-    , Parsing.test_allJustAllGood
-    , Parsing.test_allJustOneBad
+    , Parsing.test_allRightEmpty
+    , Parsing.test_allRightAllGood
+    , Parsing.test_allRightOneBad
     , Parsing.test_parseListOfCounterBlankWithWhitespace
     , Parsing.test_parseListOfCounterNormal
     , Parsing.test_parseListOfCounterNotUnsure

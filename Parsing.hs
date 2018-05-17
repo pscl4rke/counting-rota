@@ -2,6 +2,7 @@
 module Parsing where
 
 import Data.Char
+import Data.Either
 import Data.List
 import Test.Tasty.HUnit
 
@@ -9,27 +10,29 @@ import Planning
 
 
 
-parseCounter :: [Counter] -> String -> Maybe Counter
-parseCounter [] _ = Nothing
+parseCounter :: [Counter] -> String -> Either String Counter
+parseCounter [] name = Left $ "Did not recognise " ++ (show name) ++ " as a counter"
 parseCounter (c:cs) name = let (Counter name') = c
                            in if (name == name')
-                              then (Just c)
-                              else (parseCounter cs name)
+                              then (Right c)
+                              else if (name == (name' ++ "?"))
+                                   then Left $ "Counter " ++ (show name) ++ " cannot have a question mark"
+                                   else (parseCounter cs name)
 
 test_parseCounterEmpty = testCase "parseCounter Empty" $ assertEqual
                                     "Error occurred"
-                                    Nothing
+                                    (Left "Did not recognise \"Foo\" as a counter")
                                     (parseCounter [] "Foo")
 
 test_parseCounterNoMatches = testCase "parseCounter No Matches" $ assertEqual
                                     "Error occurred"
-                                    Nothing
+                                    (Left "Did not recognise \"Foo\" as a counter")
                                     (parseCounter cs "Foo")
                                     where cs = [Counter "Bar", Counter "Baz"]
 
 test_parseCounterAMatch = testCase "parseCounter A Match" $ assertEqual
                                     "Error occurred"
-                                    (Just (Counter "Bar"))
+                                    (Right (Counter "Bar"))
                                     (parseCounter cs "Bar")
                                     where cs = [Counter "Bar", Counter "Baz"]
 
@@ -37,35 +40,35 @@ test_parseCounterAMatch = testCase "parseCounter A Match" $ assertEqual
 
 
 
-parseUnsureAboutCounter :: [Counter] -> String -> Maybe (UnsureAbout Counter)
-parseUnsureAboutCounter [] _ = Nothing
+parseUnsureAboutCounter :: [Counter] -> String -> Either String (UnsureAbout Counter)
+parseUnsureAboutCounter [] name = Left $ "Did not recognise " ++ (show name) ++ " as a counter"
 parseUnsureAboutCounter (c:cs) name = let (Counter name') = c
                                       in if (name == name')
-                                         then (Just (Definitely c))
+                                         then (Right (Definitely c))
                                          else if (name == (name' ++ "?"))
-                                              then (Just (Perhaps c))
+                                              then (Right (Perhaps c))
                                               else (parseUnsureAboutCounter cs name)
 
 test_parseUnsureAboutCounterEmpty = testCase "parseUnsureAboutCounter Empty" $ assertEqual
                                             "Error occurred"
-                                            Nothing
+                                            (Left "Did not recognise \"Foo\" as a counter")
                                             (parseUnsureAboutCounter [] "Foo")
 
 test_parseUnsureAboutCounterNoMatches = testCase "parseUnsureAboutCounter No Matches" $ assertEqual
                                             "Error occurred"
-                                            Nothing
+                                            (Left "Did not recognise \"Foo\" as a counter")
                                             (parseUnsureAboutCounter cs "Foo")
                                             where cs = [Counter "Bar", Counter "Baz"]
 
 test_parseUnsureAboutCounterDefinite = testCase "parseUnsureAboutCounter Definite" $ assertEqual
                                             "Error occurred"
-                                            (Just (Definitely (Counter "Baz")))
+                                            (Right (Definitely (Counter "Baz")))
                                             (parseUnsureAboutCounter cs "Baz")
                                             where cs = [Counter "Bar", Counter "Baz"]
 
 test_parseUnsureAboutCounterPerhaps = testCase "parseUnsureAboutCounter Perhaps" $ assertEqual
                                             "Error occurred"
-                                            (Just (Perhaps (Counter "Baz")))
+                                            (Right (Perhaps (Counter "Baz")))
                                             (parseUnsureAboutCounter cs "Baz?")
                                             where cs = [Counter "Bar", Counter "Baz"]
 
@@ -158,51 +161,56 @@ test_splitIntoWordsAmpersand = testCase "splitIntoWords Ampersand" $ assertEqual
 
 
 
+joinWith :: String -> [String] -> String
+joinWith sep [] = ""
+joinWith sep (x:[]) = x
+joinWith sep (x:xs) = x ++ sep ++ (joinWith sep xs)
 
-allJust :: [Maybe a] -> Maybe [a]
-allJust [] = Just []
-allJust (Nothing:_) = Nothing
-allJust ((Just x):xs) = case (allJust xs) of
-                          Nothing -> Nothing
-                          Just ys -> Just (x:ys)
 
-test_allJustEmpty = testCase "allJust Empty" $ assertEqual
+
+
+allRight :: [Either String a] -> Either String [a]
+allRight xs = case (lefts xs) of
+                [] -> Right $ rights xs
+                msgs -> Left $ (show (length msgs)) ++ " error(s): " ++ (joinWith ", " msgs)
+
+test_allRightEmpty = testCase "allRight Empty" $ assertEqual
                         "Error occurred"
-                        (Just [])
-                        (allJust ([]::([Maybe String])))
+                        (Right [])
+                        (allRight ([]::([Either String String])))
 
-test_allJustAllGood = testCase "allJust All Good" $ assertEqual
+test_allRightAllGood = testCase "allRight All Good" $ assertEqual
                         "Error occurred"
-                        (Just [12, 18, 3])
-                        (allJust [Just 12, Just 18, Just 3])
+                        (Right [12, 18, 3])
+                        (allRight [Right 12, Right 18, Right 3])
 
-test_allJustOneBad = testCase "allJust One Bad" $ assertEqual
+test_allRightOneBad = testCase "allRight One Bad" $ assertEqual
                         "Error occurred"
-                        Nothing
-                        (allJust [Just 12, Nothing, Just 3])
+                        (Left "1 error(s): Wibble")
+                        (allRight [Right 12, Left "Wibble", Right 3])
 
 
 
 
 
-parseListOfCounter :: [Counter] -> String -> Maybe [Counter]
-parseListOfCounter cs s = allJust $ map (parseCounter cs) (splitIntoWords s)
+parseListOfCounter :: [Counter] -> String -> Either String [Counter]
+parseListOfCounter cs s = allRight $ map (parseCounter cs) (splitIntoWords s)
 
 test_parseListOfCounterBlankWithWhitespace = testCase "parseListOfCounter Blank w/ whitespace" $ assertEqual
                                     "Error occurred"
-                                    (Just [])
+                                    (Right [])
                                     (parseListOfCounter cs "    ")
                                         where cs = [Counter "Bar", Counter "Baz"]
 
 test_parseListOfCounterNormal = testCase "parseListOfCounter Normal" $ assertEqual
                                     "Error occurred"
-                                    (Just [Counter "Bar", Counter "Baz"])
+                                    (Right [Counter "Bar", Counter "Baz"])
                                     (parseListOfCounter cs "Bar, Baz")
                                         where cs = [Counter "Bar", Counter "Baz"]
 
 test_parseListOfCounterNotUnsure = testCase "parseListOfCounter Not Unsure" $ assertEqual
                                     "Error occurred"
-                                    Nothing
+                                    (Left "1 error(s): Counter \"Bar?\" cannot have a question mark")
                                     (parseListOfCounter cs "Bar?, Baz")
                                         where cs = [Counter "Bar", Counter "Baz"]
 
@@ -210,12 +218,12 @@ test_parseListOfCounterNotUnsure = testCase "parseListOfCounter Not Unsure" $ as
 
 
 
-parseListOfUnsureAboutCounter :: [Counter] -> String -> Maybe [(UnsureAbout Counter)]
-parseListOfUnsureAboutCounter cs s = allJust $ map (parseUnsureAboutCounter cs) (splitIntoWords s)
+parseListOfUnsureAboutCounter :: [Counter] -> String -> Either String [(UnsureAbout Counter)]
+parseListOfUnsureAboutCounter cs s = allRight $ map (parseUnsureAboutCounter cs) (splitIntoWords s)
 
 test_parseListOfUnsureAboutCounterBlankWithWhitespace = testCase "parseListOfUnsureAboutCounter Blank w/" $ assertEqual
                                         "Error occurred"
-                                        (Just [])
+                                        (Right [])
                                         (parseListOfUnsureAboutCounter cs "       ")
                                           where cs = [foo, bar, baz, quux]
                                                 foo = Counter "Foo"
@@ -225,7 +233,7 @@ test_parseListOfUnsureAboutCounterBlankWithWhitespace = testCase "parseListOfUns
 
 test_parseListOfUnsureAboutCounterNormal = testCase "parseListOfUnsureAboutCounter Normal" $ assertEqual
                                         "Error occurred"
-                                        (Just [Definitely bar, Perhaps baz, Definitely quux])
+                                        (Right [Definitely bar, Perhaps baz, Definitely quux])
                                         (parseListOfUnsureAboutCounter cs "Bar, Baz? & Quux")
                                           where cs = [foo, bar, baz, quux]
                                                 foo = Counter "Foo"
