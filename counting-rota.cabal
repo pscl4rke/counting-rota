@@ -6,9 +6,11 @@ executable rota
     main-is: rota.hs
     build-depends: base
     build-depends: old-locale
+    build-depends: split
     build-depends: time
 executable test
     main-is: test.hs
     build-depends: base
+    build-depends: split
     build-depends: tasty
     build-depends: tasty-hunit
