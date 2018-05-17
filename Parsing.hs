@@ -114,12 +114,17 @@ test_stripBothSides = testCase "strip BothSides" $ assertEqual
 
 
 splitIntoWords :: String -> [String]
-splitIntoWords input = map strip (separateOn ",&" input)
+splitIntoWords input = map strip (separateOn ",&" (strip input))
 
 test_splitIntoWordsEmpty = testCase "splitIntoWords Empty" $ assertEqual
                                 "Error occurred"
                                 []
                                 (splitIntoWords "")
+
+test_splitIntoWordsWhitespace = testCase "splitIntoWords Whitespace" $ assertEqual
+                                "Error occurred"
+                                []
+                                (splitIntoWords "   ")
 
 test_splitIntoWordsOne = testCase "splitIntoWords One" $ assertEqual
                                 "Error occurred"
@@ -183,6 +188,12 @@ test_allJustOneBad = testCase "allJust One Bad" $ assertEqual
 parseListOfCounter :: [Counter] -> String -> Maybe [Counter]
 parseListOfCounter cs s = allJust $ map (parseCounter cs) (splitIntoWords s)
 
+test_parseListOfCounterBlankWithWhitespace = testCase "parseListOfCounter Blank w/ whitespace" $ assertEqual
+                                    "Error occurred"
+                                    (Just [])
+                                    (parseListOfCounter cs "    ")
+                                        where cs = [Counter "Bar", Counter "Baz"]
+
 test_parseListOfCounterNormal = testCase "parseListOfCounter Normal" $ assertEqual
                                     "Error occurred"
                                     (Just [Counter "Bar", Counter "Baz"])
@@ -201,6 +212,16 @@ test_parseListOfCounterNotUnsure = testCase "parseListOfCounter Not Unsure" $ as
 
 parseListOfUnsureAboutCounter :: [Counter] -> String -> Maybe [(UnsureAbout Counter)]
 parseListOfUnsureAboutCounter cs s = allJust $ map (parseUnsureAboutCounter cs) (splitIntoWords s)
+
+test_parseListOfUnsureAboutCounterBlankWithWhitespace = testCase "parseListOfUnsureAboutCounter Blank w/" $ assertEqual
+                                        "Error occurred"
+                                        (Just [])
+                                        (parseListOfUnsureAboutCounter cs "       ")
+                                          where cs = [foo, bar, baz, quux]
+                                                foo = Counter "Foo"
+                                                bar = Counter "Bar"
+                                                baz = Counter "Baz"
+                                                quux = Counter "Quux"
 
 test_parseListOfUnsureAboutCounterNormal = testCase "parseListOfUnsureAboutCounter Normal" $ assertEqual
                                         "Error occurred"

@@ -56,6 +56,7 @@ parsingTests =
     , Parsing.test_stripBlank
     , Parsing.test_stripNone
     , Parsing.test_stripBothSides
+    , Parsing.test_splitIntoWordsWhitespace
     , Parsing.test_splitIntoWordsEmpty
     , Parsing.test_splitIntoWordsOne
     , Parsing.test_splitIntoWordsOneWS
@@ -66,8 +67,10 @@ parsingTests =
     , Parsing.test_allJustEmpty
     , Parsing.test_allJustAllGood
     , Parsing.test_allJustOneBad
+    , Parsing.test_parseListOfCounterBlankWithWhitespace
     , Parsing.test_parseListOfCounterNormal
     , Parsing.test_parseListOfCounterNotUnsure
+    , Parsing.test_parseListOfUnsureAboutCounterBlankWithWhitespace
     , Parsing.test_parseListOfUnsureAboutCounterNormal
     ]
 
