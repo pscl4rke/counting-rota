@@ -37,12 +37,20 @@ r line = case (splitOn "|" line) of
     [left, right] -> ((q left) `without` (p right))
     _ -> error ("Invalid columns: '" ++ line ++ "'")
 
+s :: String -> Slot
+s line = case (splitOn "|" line) of
+    [date, yes, no] ->
+        let prefs = (q yes) `without` (p no) in
+        let countersneeded = 2 in -- FIXME
+        Slot countersneeded (strip date) prefs
+    _ -> error ("Invalid columns: '" ++ line ++ "'")
+
 slots =
-    [ Slot 2 "1st Jan" (r "Carol    |               ")
-    , Slot 1 "2nd Jan" (r "         |               ")
-    , Slot 2 "3rd Jan" (r "         |               ")
-    , Slot 2 "4th Jan" (r "         | Dave, Eve     ")
-    , Slot 3 "5th Jan" (r "         | Alice         ")
-    , Slot 2 "6th Jan" (r "         | Bob?, Dave    ")
-    , Slot 2 "7th Jan" (r "         |               ")
+    [ s "     1st Jan    | Carol    |               "
+    , s "     2nd Jan    |          |               "
+    , s "     3rd Jan    |          |               "
+    , s "     4th Jan    |          | Dave, Eve     "
+    , s "     5th Jan    |          | Alice         "
+    , s "     6th Jan    |          | Bob?, Dave    "
+    , s "     7th Jan    |          |               "
     ]
