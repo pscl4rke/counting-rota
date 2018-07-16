@@ -87,10 +87,12 @@ main = do
     case command of
         "rota" -> do
             let rotas = sortOn (overallStrikes counters) $ usableRotas counters slots
-            forM_ (take 5 rotas) $ \rota -> do
-                putStrLn ""
-                displayScorecard $ scorecard counters rota
-                display counters rota
+            case (length rotas) of
+                0 -> putStrLn "There are no rotas that could be generated"
+                _ -> forM_ (take 5 rotas) $ \rota -> do
+                    putStrLn ""
+                    displayScorecard $ scorecard counters rota
+                    display counters rota
         "blank" -> do
             sundays <- nextFifteenSundays
             display counters (blankRota 2 sundays)
