@@ -59,8 +59,8 @@ display allCounters rota = do
     forM_ slotmap $ \(slot, theseCounters) -> do
         let Slot size description prefs = slot
         putStrLn $ "| "
-                    ++ (padRight 12 description)
-                    ++ "  | "
+                    ++ (padRight 13 description)
+                    ++ " | "
                     ++ (padLeft 24 (showNames theseCounters))
                     ++ "| "
                     ++ (padLeft 27 (showNotAvailable prefs))
