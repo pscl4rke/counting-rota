@@ -14,7 +14,9 @@ setTests =
     ]
 
 planningTests =
-    [ Planning.test_canDoGoodPrefs
+    [ Planning.test_canDoEmergencyListed
+    , Planning.test_canDoEmergencyUnlisted
+    , Planning.test_canDoGoodPrefs
     , Planning.test_canDoBadPrefs
     , Planning.test_acceptableMatch
     , Planning.test_acceptableUnder

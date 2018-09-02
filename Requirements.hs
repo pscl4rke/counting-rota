@@ -8,11 +8,11 @@ import Planning
 
 
 
-alice =     Counter "Alice"
-bob =       Counter "Bob"
-carol =     Counter "Carol"
-dave =      Counter "Dave"
-eve =       Counter "Eve"
+alice =     Counter True  "Alice"
+bob =       Counter True  "Bob"
+carol =     Counter False "Carol"
+dave =      Counter True  "Dave"
+eve =       Counter True  "Eve"
 
 counters =
     [ alice

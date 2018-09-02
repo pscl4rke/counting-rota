@@ -17,7 +17,7 @@ import Scoring
 
 showNames :: [Counter] -> String
 showNames counters = showStrings $ map nameOf counters
-  where nameOf (Counter name) = name
+  where nameOf (Counter _ name) = name
 
 
 
@@ -44,7 +44,7 @@ showNotAvailable prefs = showStrings (map showSomething (notAvailable prefs))
             CannotDo -> nameOf counter
             WantsToAvoid -> (nameOf counter) ++ "?"
             _ -> "ERROR!"
-        nameOf (Counter x) = x
+        nameOf (Counter _ x) = x
 
 
 

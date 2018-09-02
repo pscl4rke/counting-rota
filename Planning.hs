@@ -18,11 +18,19 @@ data Preferences = Preferences [(Counter, Availability)]
 data Slot = Slot Integer String Preferences
   deriving Show
 
-data Counter = Counter String
+data Counter = Counter Bool String
   deriving (Show, Eq)
 
 data Rota = Rota [(Slot, [Counter])]
   deriving Show
+
+
+normalCounter :: String -> Counter
+normalCounter name = Counter True name
+
+
+emergencyCounter :: String -> Counter
+emergencyCounter name = Counter False name
 
 
 blankRota :: Integer -> [String] -> Rota
@@ -46,21 +54,37 @@ without musts unsurenots = Preferences (mustpairs ++ unsurenotpairs)
 
 
 canDo :: Preferences -> Counter -> Bool
-canDo (Preferences ps) c = canDo' ps c
-  where canDo' [] c = True
-        canDo' ((c', p'):ps) c = if (c' == c)
+canDo (Preferences ps) c = case c of
+    Counter True _ -> canDoNormal ps c
+    Counter False _ -> canDoEmergency ps c
+  where canDoNormal [] c = True
+        canDoNormal ((c', p'):ps) c = if (c' == c)
                                  then (if (p' == CannotDo) then False else True)
-                                 else (canDo' ps c)
+                                 else (canDoNormal ps c)
+        canDoEmergency [] c = False
+        canDoEmergency ((c', p'):ps) c = if (c' == c)
+                                         then (if (p' == MustDo) then True else False)
+                                         else (canDoEmergency ps c)
+
+test_canDoEmergencyListed = testCase "CanDo Emergency Listed" $ assertEqual
+                                    "Error occurred"
+                                    True
+                                    (canDo (Preferences [(emergencyCounter "Bob", MustDo)]) (emergencyCounter "Bob"))
+
+test_canDoEmergencyUnlisted = testCase "CanDo Emergency Unlisted" $ assertEqual
+                                    "Error occurred"
+                                    False
+                                    (canDo (Preferences [(emergencyCounter "Bob", CanDo)]) (emergencyCounter "Bob"))
 
 test_canDoGoodPrefs = testCase "CanDo Good Prefs" $ assertEqual
                                     "Error occurred"
                                     True
-                                    (canDo (Preferences [(Counter "Alice", CannotDo)]) (Counter "Bob"))
+                                    (canDo (Preferences [(normalCounter "Alice", CannotDo)]) (normalCounter "Bob"))
 
 test_canDoBadPrefs = testCase "CanDo Bad Prefs" $ assertEqual
                                     "Error occurred"
                                     False
-                                    (canDo (Preferences [(Counter "Alice", CannotDo)]) (Counter "Alice"))
+                                    (canDo (Preferences [(normalCounter "Alice", CannotDo)]) (normalCounter "Alice"))
 
 
 
@@ -84,28 +108,28 @@ acceptable (Slot n t p) cs = ((length cs) == (fromIntegral n))
 test_acceptableMatch = testCase "Acceptable Good" $ assertEqual
                                     "Error occurred"
                                     True
-                                    (acceptable (Slot 1 "foo" allFree) [Counter "Alice"])
+                                    (acceptable (Slot 1 "foo" allFree) [normalCounter "Alice"])
 
 test_acceptableUnder = testCase "Acceptable Under" $ assertEqual
                                     "Error occurred"
                                     False
-                                    (acceptable (Slot 2 "foo" allFree) [Counter "Bob"])
+                                    (acceptable (Slot 2 "foo" allFree) [normalCounter "Bob"])
 
 test_acceptableOver = testCase "Acceptable Over" $ assertEqual
                                     "Error occurred"
                                     False
                                     (acceptable (Slot 1 "foo" allFree)
-                                        [Counter "Alice", Counter "Bob"])
+                                        [normalCounter "Alice", normalCounter "Bob"])
 
 test_acceptableGoodPrefs = testCase "Acceptable Good Prefs" $ assertEqual
                                         "Error occurred"
                                         True
-                                        (acceptable (Slot 1 "foo" (Preferences [(Counter "Alice", CannotDo)])) [Counter "Bob"])
+                                        (acceptable (Slot 1 "foo" (Preferences [(normalCounter "Alice", CannotDo)])) [normalCounter "Bob"])
 
 test_acceptableBadPrefs = testCase "Acceptable Bad Prefs" $ assertEqual
                                         "Error occurred"
                                         False
-                                        (acceptable (Slot 1 "foo" (Preferences [(Counter "Alice", CannotDo)])) [Counter "Alice"])
+                                        (acceptable (Slot 1 "foo" (Preferences [(normalCounter "Alice", CannotDo)])) [normalCounter "Alice"])
 
 
 
@@ -123,14 +147,14 @@ test_noUsableRotas = testCase "No Usable Rotas" $ assertEqual
                             "Error occurred"
                             0
                             (length (usableRotas counters slots))
-  where counters = [Counter "Alice", Counter "Bob"]
+  where counters = [normalCounter "Alice", normalCounter "Bob"]
         slots = [Slot 5 "1st January" allFree, Slot 2 "2nd January" allFree]
 
 test_usableRotas = testCase "2 Usable Rotas" $ assertEqual
                             "Error occurred"
                             2
                             (length (usableRotas counters slots))
-  where counters = [Counter "Alice", Counter "Bob"]
+  where counters = [normalCounter "Alice", normalCounter "Bob"]
         slots = [Slot 1 "1st January" allFree, Slot 2 "2nd January" allFree]
 
 

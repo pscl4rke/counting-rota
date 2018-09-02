@@ -12,7 +12,7 @@ import Planning
 
 parseCounter :: [Counter] -> String -> Either String Counter
 parseCounter [] name = Left $ "Did not recognise " ++ (show name) ++ " as a counter"
-parseCounter (c:cs) name = let (Counter name') = c
+parseCounter (c:cs) name = let (Counter _ name') = c
                            in if (name == name')
                               then (Right c)
                               else if (name == (name' ++ "?"))
@@ -28,13 +28,13 @@ test_parseCounterNoMatches = testCase "parseCounter No Matches" $ assertEqual
                                     "Error occurred"
                                     (Left "Did not recognise \"Foo\" as a counter")
                                     (parseCounter cs "Foo")
-                                    where cs = [Counter "Bar", Counter "Baz"]
+                                    where cs = [normalCounter "Bar", normalCounter "Baz"]
 
 test_parseCounterAMatch = testCase "parseCounter A Match" $ assertEqual
                                     "Error occurred"
-                                    (Right (Counter "Bar"))
+                                    (Right (normalCounter "Bar"))
                                     (parseCounter cs "Bar")
-                                    where cs = [Counter "Bar", Counter "Baz"]
+                                    where cs = [normalCounter "Bar", normalCounter "Baz"]
 
 
 
@@ -42,7 +42,7 @@ test_parseCounterAMatch = testCase "parseCounter A Match" $ assertEqual
 
 parseUnsureAboutCounter :: [Counter] -> String -> Either String (UnsureAbout Counter)
 parseUnsureAboutCounter [] name = Left $ "Did not recognise " ++ (show name) ++ " as a counter"
-parseUnsureAboutCounter (c:cs) name = let (Counter name') = c
+parseUnsureAboutCounter (c:cs) name = let (Counter _ name') = c
                                       in if (name == name')
                                          then (Right (Definitely c))
                                          else if (name == (name' ++ "?"))
@@ -58,19 +58,19 @@ test_parseUnsureAboutCounterNoMatches = testCase "parseUnsureAboutCounter No Mat
                                             "Error occurred"
                                             (Left "Did not recognise \"Foo\" as a counter")
                                             (parseUnsureAboutCounter cs "Foo")
-                                            where cs = [Counter "Bar", Counter "Baz"]
+                                            where cs = [normalCounter "Bar", normalCounter "Baz"]
 
 test_parseUnsureAboutCounterDefinite = testCase "parseUnsureAboutCounter Definite" $ assertEqual
                                             "Error occurred"
-                                            (Right (Definitely (Counter "Baz")))
+                                            (Right (Definitely (normalCounter "Baz")))
                                             (parseUnsureAboutCounter cs "Baz")
-                                            where cs = [Counter "Bar", Counter "Baz"]
+                                            where cs = [normalCounter "Bar", normalCounter "Baz"]
 
 test_parseUnsureAboutCounterPerhaps = testCase "parseUnsureAboutCounter Perhaps" $ assertEqual
                                             "Error occurred"
-                                            (Right (Perhaps (Counter "Baz")))
+                                            (Right (Perhaps (normalCounter "Baz")))
                                             (parseUnsureAboutCounter cs "Baz?")
-                                            where cs = [Counter "Bar", Counter "Baz"]
+                                            where cs = [normalCounter "Bar", normalCounter "Baz"]
 
 
 
@@ -200,19 +200,19 @@ test_parseListOfCounterBlankWithWhitespace = testCase "parseListOfCounter Blank 
                                     "Error occurred"
                                     (Right [])
                                     (parseListOfCounter cs "    ")
-                                        where cs = [Counter "Bar", Counter "Baz"]
+                                        where cs = [normalCounter "Bar", normalCounter "Baz"]
 
 test_parseListOfCounterNormal = testCase "parseListOfCounter Normal" $ assertEqual
                                     "Error occurred"
-                                    (Right [Counter "Bar", Counter "Baz"])
+                                    (Right [normalCounter "Bar", normalCounter "Baz"])
                                     (parseListOfCounter cs "Bar, Baz")
-                                        where cs = [Counter "Bar", Counter "Baz"]
+                                        where cs = [normalCounter "Bar", normalCounter "Baz"]
 
 test_parseListOfCounterNotUnsure = testCase "parseListOfCounter Not Unsure" $ assertEqual
                                     "Error occurred"
                                     (Left "1 error(s): Counter \"Bar?\" cannot have a question mark")
                                     (parseListOfCounter cs "Bar?, Baz")
-                                        where cs = [Counter "Bar", Counter "Baz"]
+                                        where cs = [normalCounter "Bar", normalCounter "Baz"]
 
 
 
@@ -226,20 +226,20 @@ test_parseListOfUnsureAboutCounterBlankWithWhitespace = testCase "parseListOfUns
                                         (Right [])
                                         (parseListOfUnsureAboutCounter cs "       ")
                                           where cs = [foo, bar, baz, quux]
-                                                foo = Counter "Foo"
-                                                bar = Counter "Bar"
-                                                baz = Counter "Baz"
-                                                quux = Counter "Quux"
+                                                foo = normalCounter "Foo"
+                                                bar = emergencyCounter "Bar"
+                                                baz = normalCounter "Baz"
+                                                quux = normalCounter "Quux"
 
 test_parseListOfUnsureAboutCounterNormal = testCase "parseListOfUnsureAboutCounter Normal" $ assertEqual
                                         "Error occurred"
                                         (Right [Definitely bar, Perhaps baz, Definitely quux])
                                         (parseListOfUnsureAboutCounter cs "Bar, Baz? & Quux")
                                           where cs = [foo, bar, baz, quux]
-                                                foo = Counter "Foo"
-                                                bar = Counter "Bar"
-                                                baz = Counter "Baz"
-                                                quux = Counter "Quux"
+                                                foo = normalCounter "Foo"
+                                                bar = normalCounter "Bar"
+                                                baz = emergencyCounter "Baz"
+                                                quux = normalCounter "Quux"
 
 
 
