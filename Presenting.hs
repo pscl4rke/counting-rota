@@ -1,6 +1,10 @@
 
+{-# LANGUAGE TemplateHaskell #-}
+
 module Presenting where
 
+import Test.Tasty
+import Test.Tasty.TH
 import Test.Tasty.HUnit
 
 
@@ -11,12 +15,12 @@ padLeft :: Int -> String -> String
 padLeft n [] = replicate n ' '
 padLeft n (c:cs) = c:(padLeft (n - 1) cs)
 
-test_padLeftNormal = testCase "padLeft Normal" $ assertEqual
+case_padLeftNormal = assertEqual
                                     "Error occurred"
                                     "Foo Bar   "
                                     (padLeft 10 "Foo Bar")
 
-test_padLeftLong = testCase "padLeft Long" $ assertEqual
+case_padLeftLong = assertEqual
                                     "Error occurred"
                                     "Foo Bar Baz Quux"
                                     (padLeft 10 "Foo Bar Baz Quux")
@@ -28,12 +32,12 @@ test_padLeftLong = testCase "padLeft Long" $ assertEqual
 padRight :: Int -> String -> String
 padRight n cs = (replicate (n - (length cs)) ' ') ++ cs
 
-test_padRightNormal = testCase "padRight Normal" $ assertEqual
+case_padRightNormal = assertEqual
                                     "Error occurred"
                                     "   Foo Bar"
                                     (padRight 10 "Foo Bar")
 
-test_padRightLong = testCase "padRight Long" $ assertEqual
+case_padRightLong = assertEqual
                                     "Error occurred"
                                     "Foo Bar Baz Quux"
                                     (padRight 10 "Foo Bar Baz Quux")
@@ -49,22 +53,27 @@ showStrings (x:[])        = x
 showStrings (x:y:[])      = x ++ " & " ++ y
 showStrings (x:xs)        = x ++ ", " ++ (showStrings xs)
 
-test_showStringsNone = testCase "showStrings None" $ assertEqual
+case_showStringsNone = assertEqual
                                     "Error occurred"
                                     ""
                                     (showStrings [])
 
-test_showStringsOne = testCase "showStrings One" $ assertEqual
+case_showStringsOne = assertEqual
                                     "Error occurred"
                                     "Foo"
                                     (showStrings ["Foo"])
 
-test_showStringsTwo = testCase "showStrings Two" $ assertEqual
+case_showStringsTwo = assertEqual
                                     "Error occurred"
                                     "Foo & Bar"
                                     (showStrings ["Foo", "Bar"])
 
-test_showStringsThree = testCase "showStrings Three" $ assertEqual
+case_showStringsThree = assertEqual
                                     "Error occurred"
                                     "Foo, Bar & Baz"
                                     (showStrings ["Foo", "Bar", "Baz"])
+
+
+
+tests :: TestTree
+tests = $(testGroupGenerator)

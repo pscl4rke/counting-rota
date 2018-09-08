@@ -1,9 +1,14 @@
 
+{-# LANGUAGE TemplateHaskell #-}
+
 module Parsing where
 
 import Data.Char
 import Data.Either
 import Data.List
+
+import Test.Tasty
+import Test.Tasty.TH
 import Test.Tasty.HUnit
 
 import Planning
@@ -19,18 +24,18 @@ parseCounter (c:cs) name = let (Counter _ name') = c
                                    then Left $ "Counter " ++ (show name) ++ " cannot have a question mark"
                                    else (parseCounter cs name)
 
-test_parseCounterEmpty = testCase "parseCounter Empty" $ assertEqual
+case_parseCounterEmpty = assertEqual
                                     "Error occurred"
                                     (Left "Did not recognise \"Foo\" as a counter")
                                     (parseCounter [] "Foo")
 
-test_parseCounterNoMatches = testCase "parseCounter No Matches" $ assertEqual
+case_parseCounterNoMatches = assertEqual
                                     "Error occurred"
                                     (Left "Did not recognise \"Foo\" as a counter")
                                     (parseCounter cs "Foo")
                                     where cs = [normalCounter "Bar", normalCounter "Baz"]
 
-test_parseCounterAMatch = testCase "parseCounter A Match" $ assertEqual
+case_parseCounterAMatch = assertEqual
                                     "Error occurred"
                                     (Right (normalCounter "Bar"))
                                     (parseCounter cs "Bar")
@@ -49,24 +54,24 @@ parseUnsureAboutCounter (c:cs) name = let (Counter _ name') = c
                                               then (Right (Perhaps c))
                                               else (parseUnsureAboutCounter cs name)
 
-test_parseUnsureAboutCounterEmpty = testCase "parseUnsureAboutCounter Empty" $ assertEqual
+case_parseUnsureAboutCounterEmpty = assertEqual
                                             "Error occurred"
                                             (Left "Did not recognise \"Foo\" as a counter")
                                             (parseUnsureAboutCounter [] "Foo")
 
-test_parseUnsureAboutCounterNoMatches = testCase "parseUnsureAboutCounter No Matches" $ assertEqual
+case_parseUnsureAboutCounterNoMatches = assertEqual
                                             "Error occurred"
                                             (Left "Did not recognise \"Foo\" as a counter")
                                             (parseUnsureAboutCounter cs "Foo")
                                             where cs = [normalCounter "Bar", normalCounter "Baz"]
 
-test_parseUnsureAboutCounterDefinite = testCase "parseUnsureAboutCounter Definite" $ assertEqual
+case_parseUnsureAboutCounterDefinite = assertEqual
                                             "Error occurred"
                                             (Right (Definitely (normalCounter "Baz")))
                                             (parseUnsureAboutCounter cs "Baz")
                                             where cs = [normalCounter "Bar", normalCounter "Baz"]
 
-test_parseUnsureAboutCounterPerhaps = testCase "parseUnsureAboutCounter Perhaps" $ assertEqual
+case_parseUnsureAboutCounterPerhaps = assertEqual
                                             "Error occurred"
                                             (Right (Perhaps (normalCounter "Baz")))
                                             (parseUnsureAboutCounter cs "Baz?")
@@ -82,12 +87,12 @@ separateOn xs (y:ys) | (y `elem` xs) = []:(separateOn xs ys)
                                     (zs:zss) -> (y:zs):zss
                                     [] -> [[y]]
 
-test_separateOnSingle= testCase "separateOn Single" $ assertEqual
+case_separateOnSingle= assertEqual
                             "Error occurred"
                             ["foo", "bar", "baz"]
                             (separateOn "|" "foo|bar|baz")
 
-test_separateOnMultiple= testCase "separateOn Multiple" $ assertEqual
+case_separateOnMultiple= assertEqual
                             "Error occurred"
                             ["foo", "bar", "baz"]
                             (separateOn "|/" "foo/bar|baz")
@@ -98,17 +103,17 @@ test_separateOnMultiple= testCase "separateOn Multiple" $ assertEqual
 strip :: String -> String
 strip = dropWhileEnd isSpace . dropWhile isSpace
 
-test_stripBlank = testCase "strip Blank" $ assertEqual
+case_stripBlank = assertEqual
                     "Error occurred"
                     ""
                     (strip "")
 
-test_stripNone = testCase "strip None" $ assertEqual
+case_stripNone = assertEqual
                     "Error occurred"
                     "Foo bar"
                     (strip "Foo bar")
 
-test_stripBothSides = testCase "strip BothSides" $ assertEqual
+case_stripBothSides = assertEqual
                     "Error occurred"
                     "foo  Bar"
                     (strip "    foo  Bar  ")
@@ -119,42 +124,42 @@ test_stripBothSides = testCase "strip BothSides" $ assertEqual
 splitIntoWords :: String -> [String]
 splitIntoWords input = map strip (separateOn ",&" (strip input))
 
-test_splitIntoWordsEmpty = testCase "splitIntoWords Empty" $ assertEqual
+case_splitIntoWordsEmpty = assertEqual
                                 "Error occurred"
                                 []
                                 (splitIntoWords "")
 
-test_splitIntoWordsWhitespace = testCase "splitIntoWords Whitespace" $ assertEqual
+case_splitIntoWordsWhitespace = assertEqual
                                 "Error occurred"
                                 []
                                 (splitIntoWords "   ")
 
-test_splitIntoWordsOne = testCase "splitIntoWords One" $ assertEqual
+case_splitIntoWordsOne = assertEqual
                                 "Error occurred"
                                 ["Hello"]
                                 (splitIntoWords "Hello")
 
-test_splitIntoWordsOneWS = testCase "splitIntoWords One w/ whitespace" $ assertEqual
+case_splitIntoWordsOneWS = assertEqual
                                 "Error occurred"
                                 ["Hello"]
                                 (splitIntoWords " Hello  ")
 
-test_splitIntoWordsOneMulti = testCase "splitIntoWords OneMulti" $ assertEqual
+case_splitIntoWordsOneMulti = assertEqual
                                 "Error occurred"
                                 ["Hello There"]
                                 (splitIntoWords "Hello There")
 
-test_splitIntoWordsTwoClose = testCase "splitIntoWords TwoClose" $ assertEqual
+case_splitIntoWordsTwoClose = assertEqual
                                 "Error occurred"
                                 ["Hello", "There"]
                                 (splitIntoWords "Hello,There")
 
-test_splitIntoWordsTwoFar = testCase "splitIntoWords TwoFar" $ assertEqual
+case_splitIntoWordsTwoFar = assertEqual
                                 "Error occurred"
                                 ["Hello", "There"]
                                 (splitIntoWords "Hello, There")
 
-test_splitIntoWordsAmpersand = testCase "splitIntoWords Ampersand" $ assertEqual
+case_splitIntoWordsAmpersand = assertEqual
                                 "Error occurred"
                                 ["Hello", "There"]
                                 (splitIntoWords "Hello & There")
@@ -174,17 +179,17 @@ allRight xs = case (lefts xs) of
                 [] -> Right $ rights xs
                 msgs -> Left $ (show (length msgs)) ++ " error(s): " ++ (joinWith ", " msgs)
 
-test_allRightEmpty = testCase "allRight Empty" $ assertEqual
+case_allRightEmpty = assertEqual
                         "Error occurred"
                         (Right [])
                         (allRight ([]::([Either String String])))
 
-test_allRightAllGood = testCase "allRight All Good" $ assertEqual
+case_allRightAllGood = assertEqual
                         "Error occurred"
                         (Right [12, 18, 3])
                         (allRight [Right 12, Right 18, Right 3])
 
-test_allRightOneBad = testCase "allRight One Bad" $ assertEqual
+case_allRightOneBad = assertEqual
                         "Error occurred"
                         (Left "1 error(s): Wibble")
                         (allRight [Right 12, Left "Wibble", Right 3])
@@ -196,19 +201,19 @@ test_allRightOneBad = testCase "allRight One Bad" $ assertEqual
 parseListOfCounter :: [Counter] -> String -> Either String [Counter]
 parseListOfCounter cs s = allRight $ map (parseCounter cs) (splitIntoWords s)
 
-test_parseListOfCounterBlankWithWhitespace = testCase "parseListOfCounter Blank w/ whitespace" $ assertEqual
+case_parseListOfCounterBlankWithWhitespace = assertEqual
                                     "Error occurred"
                                     (Right [])
                                     (parseListOfCounter cs "    ")
                                         where cs = [normalCounter "Bar", normalCounter "Baz"]
 
-test_parseListOfCounterNormal = testCase "parseListOfCounter Normal" $ assertEqual
+case_parseListOfCounterNormal = assertEqual
                                     "Error occurred"
                                     (Right [normalCounter "Bar", normalCounter "Baz"])
                                     (parseListOfCounter cs "Bar, Baz")
                                         where cs = [normalCounter "Bar", normalCounter "Baz"]
 
-test_parseListOfCounterNotUnsure = testCase "parseListOfCounter Not Unsure" $ assertEqual
+case_parseListOfCounterNotUnsure = assertEqual
                                     "Error occurred"
                                     (Left "1 error(s): Counter \"Bar?\" cannot have a question mark")
                                     (parseListOfCounter cs "Bar?, Baz")
@@ -221,7 +226,7 @@ test_parseListOfCounterNotUnsure = testCase "parseListOfCounter Not Unsure" $ as
 parseListOfUnsureAboutCounter :: [Counter] -> String -> Either String [(UnsureAbout Counter)]
 parseListOfUnsureAboutCounter cs s = allRight $ map (parseUnsureAboutCounter cs) (splitIntoWords s)
 
-test_parseListOfUnsureAboutCounterBlankWithWhitespace = testCase "parseListOfUnsureAboutCounter Blank w/" $ assertEqual
+case_parseListOfUnsureAboutCounterBlankWithWhitespace = assertEqual
                                         "Error occurred"
                                         (Right [])
                                         (parseListOfUnsureAboutCounter cs "       ")
@@ -231,7 +236,7 @@ test_parseListOfUnsureAboutCounterBlankWithWhitespace = testCase "parseListOfUns
                                                 baz = normalCounter "Baz"
                                                 quux = normalCounter "Quux"
 
-test_parseListOfUnsureAboutCounterNormal = testCase "parseListOfUnsureAboutCounter Normal" $ assertEqual
+case_parseListOfUnsureAboutCounterNormal = assertEqual
                                         "Error occurred"
                                         (Right [Definitely bar, Perhaps baz, Definitely quux])
                                         (parseListOfUnsureAboutCounter cs "Bar, Baz? & Quux")
@@ -243,3 +248,5 @@ test_parseListOfUnsureAboutCounterNormal = testCase "parseListOfUnsureAboutCount
 
 
 
+tests :: TestTree
+tests = $(testGroupGenerator)

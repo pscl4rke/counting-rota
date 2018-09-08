@@ -14,3 +14,4 @@ executable test
     build-depends: split
     build-depends: tasty
     build-depends: tasty-hunit
+    build-depends: tasty-th

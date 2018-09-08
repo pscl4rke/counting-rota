@@ -1,14 +1,15 @@
 
+{-# LANGUAGE TemplateHaskell #-}
 
 module Scoring where
 
-
-
 import  Data.List (intersect)
 
-import Planning
-
+import Test.Tasty
+import Test.Tasty.TH
 import Test.Tasty.HUnit
+
+import Planning
 
 
 
@@ -37,22 +38,22 @@ pairOff [] = []
 pairOff (x:[]) = []
 pairOff (x:y:ys) = (x, y):(pairOff (y:ys))
 
-test_pairOffEmpty = testCase "PairOff Empty List" $ assertEqual
+case_pairOffEmpty = assertEqual
                                     "Error occurred"
                                     ([] :: [(Bool, Bool)])
                                     (pairOff [])
 
-test_pairOffSingle = testCase "PairOff Single Element" $ assertEqual
+case_pairOffSingle = assertEqual
                                     "Error occurred"
                                     []
                                     (pairOff ["foo"])
 
-test_pairOffDouble = testCase "PairOff Double Element" $ assertEqual
+case_pairOffDouble = assertEqual
                                     "Error occurred"
                                     [("foo", "bar")]
                                     (pairOff ["foo", "bar"])
 
-test_pairOffMany = testCase "PairOff Many Elements" $ assertEqual
+case_pairOffMany = assertEqual
                                     "Error occurred"
                                     [(0, 1), (1, 4), (4, 9), (9, 16)]
                                     (pairOff [0, 1, 4, 9, 16])
@@ -122,3 +123,8 @@ scoreTotal (Scorecard a b c d) = a + b + c + d
 
 overallStrikes :: [Counter] -> Rota -> Int
 overallStrikes cs r = scoreTotal $ scorecard cs r
+
+
+
+tests :: TestTree
+tests = $(testGroupGenerator)
