@@ -24,22 +24,15 @@ parseCounter (c:cs) name = let (Counter _ name') = c
                                    then Left $ "Counter " ++ (show name) ++ " cannot have a question mark"
                                    else (parseCounter cs name)
 
-case_parseCounterEmpty = assertEqual
-                                    "Error occurred"
-                                    (Left "Did not recognise \"Foo\" as a counter")
-                                    (parseCounter [] "Foo")
+case_parseCounterEmpty = Left msg @=? parseCounter [] "Foo"
+  where msg = "Did not recognise \"Foo\" as a counter"
 
-case_parseCounterNoMatches = assertEqual
-                                    "Error occurred"
-                                    (Left "Did not recognise \"Foo\" as a counter")
-                                    (parseCounter cs "Foo")
-                                    where cs = [normalCounter "Bar", normalCounter "Baz"]
+case_parseCounterNoMatches = Left msg @=? parseCounter cs "Foo"
+  where cs = [normalCounter "Bar", normalCounter "Baz"]
+        msg = "Did not recognise \"Foo\" as a counter"
 
-case_parseCounterAMatch = assertEqual
-                                    "Error occurred"
-                                    (Right (normalCounter "Bar"))
-                                    (parseCounter cs "Bar")
-                                    where cs = [normalCounter "Bar", normalCounter "Baz"]
+case_parseCounterAMatch = Right (normalCounter "Bar") @=? parseCounter cs "Bar"
+  where cs = [normalCounter "Bar", normalCounter "Baz"]
 
 
 
@@ -54,28 +47,18 @@ parseUnsureAboutCounter (c:cs) name = let (Counter _ name') = c
                                               then (Right (Perhaps c))
                                               else (parseUnsureAboutCounter cs name)
 
-case_parseUnsureAboutCounterEmpty = assertEqual
-                                            "Error occurred"
-                                            (Left "Did not recognise \"Foo\" as a counter")
-                                            (parseUnsureAboutCounter [] "Foo")
+case_parseUnsureAboutCounterEmpty = Left msg @=? parseUnsureAboutCounter [] "Foo"
+  where msg = "Did not recognise \"Foo\" as a counter"
 
-case_parseUnsureAboutCounterNoMatches = assertEqual
-                                            "Error occurred"
-                                            (Left "Did not recognise \"Foo\" as a counter")
-                                            (parseUnsureAboutCounter cs "Foo")
-                                            where cs = [normalCounter "Bar", normalCounter "Baz"]
+case_parseUnsureAboutCounterNoMatches = Left msg @=? parseUnsureAboutCounter cs "Foo"
+  where cs = [normalCounter "Bar", normalCounter "Baz"]
+        msg = "Did not recognise \"Foo\" as a counter"
 
-case_parseUnsureAboutCounterDefinite = assertEqual
-                                            "Error occurred"
-                                            (Right (Definitely (normalCounter "Baz")))
-                                            (parseUnsureAboutCounter cs "Baz")
-                                            where cs = [normalCounter "Bar", normalCounter "Baz"]
+case_parseUnsureAboutCounterDefinite = Right (Definitely (normalCounter "Baz")) @=? parseUnsureAboutCounter cs "Baz"
+  where cs = [normalCounter "Bar", normalCounter "Baz"]
 
-case_parseUnsureAboutCounterPerhaps = assertEqual
-                                            "Error occurred"
-                                            (Right (Perhaps (normalCounter "Baz")))
-                                            (parseUnsureAboutCounter cs "Baz?")
-                                            where cs = [normalCounter "Bar", normalCounter "Baz"]
+case_parseUnsureAboutCounterPerhaps = (Right (Perhaps (normalCounter "Baz"))) @=? parseUnsureAboutCounter cs "Baz?"
+  where cs = [normalCounter "Bar", normalCounter "Baz"]
 
 
 
@@ -87,15 +70,9 @@ separateOn xs (y:ys) | (y `elem` xs) = []:(separateOn xs ys)
                                     (zs:zss) -> (y:zs):zss
                                     [] -> [[y]]
 
-case_separateOnSingle= assertEqual
-                            "Error occurred"
-                            ["foo", "bar", "baz"]
-                            (separateOn "|" "foo|bar|baz")
+case_separateOnSingle= ["foo", "bar", "baz"] @=? separateOn "|" "foo|bar|baz"
 
-case_separateOnMultiple= assertEqual
-                            "Error occurred"
-                            ["foo", "bar", "baz"]
-                            (separateOn "|/" "foo/bar|baz")
+case_separateOnMultiple= ["foo", "bar", "baz"] @=? separateOn "|/" "foo/bar|baz"
 
 
 
@@ -103,20 +80,11 @@ case_separateOnMultiple= assertEqual
 strip :: String -> String
 strip = dropWhileEnd isSpace . dropWhile isSpace
 
-case_stripBlank = assertEqual
-                    "Error occurred"
-                    ""
-                    (strip "")
+case_stripBlank = "" @=? strip ""
 
-case_stripNone = assertEqual
-                    "Error occurred"
-                    "Foo bar"
-                    (strip "Foo bar")
+case_stripNone = "Foo bar" @=? strip "Foo bar"
 
-case_stripBothSides = assertEqual
-                    "Error occurred"
-                    "foo  Bar"
-                    (strip "    foo  Bar  ")
+case_stripBothSides = "foo  Bar" @=? strip "    foo  Bar  "
 
 
 
@@ -124,45 +92,21 @@ case_stripBothSides = assertEqual
 splitIntoWords :: String -> [String]
 splitIntoWords input = map strip (separateOn ",&" (strip input))
 
-case_splitIntoWordsEmpty = assertEqual
-                                "Error occurred"
-                                []
-                                (splitIntoWords "")
+case_splitIntoWordsEmpty = [] @=? splitIntoWords ""
 
-case_splitIntoWordsWhitespace = assertEqual
-                                "Error occurred"
-                                []
-                                (splitIntoWords "   ")
+case_splitIntoWordsWhitespace = [] @=? splitIntoWords "   "
 
-case_splitIntoWordsOne = assertEqual
-                                "Error occurred"
-                                ["Hello"]
-                                (splitIntoWords "Hello")
+case_splitIntoWordsOne = ["Hello"] @=? splitIntoWords "Hello"
 
-case_splitIntoWordsOneWS = assertEqual
-                                "Error occurred"
-                                ["Hello"]
-                                (splitIntoWords " Hello  ")
+case_splitIntoWordsOneWS = ["Hello"] @=? splitIntoWords " Hello  "
 
-case_splitIntoWordsOneMulti = assertEqual
-                                "Error occurred"
-                                ["Hello There"]
-                                (splitIntoWords "Hello There")
+case_splitIntoWordsOneMulti = ["Hello There"] @=? splitIntoWords "Hello There"
 
-case_splitIntoWordsTwoClose = assertEqual
-                                "Error occurred"
-                                ["Hello", "There"]
-                                (splitIntoWords "Hello,There")
+case_splitIntoWordsTwoClose = ["Hello", "There"] @=? splitIntoWords "Hello,There"
 
-case_splitIntoWordsTwoFar = assertEqual
-                                "Error occurred"
-                                ["Hello", "There"]
-                                (splitIntoWords "Hello, There")
+case_splitIntoWordsTwoFar = ["Hello", "There"] @=? splitIntoWords "Hello, There"
 
-case_splitIntoWordsAmpersand = assertEqual
-                                "Error occurred"
-                                ["Hello", "There"]
-                                (splitIntoWords "Hello & There")
+case_splitIntoWordsAmpersand = ["Hello", "There"] @=? splitIntoWords "Hello & There"
 
 
 
@@ -179,20 +123,11 @@ allRight xs = case (lefts xs) of
                 [] -> Right $ rights xs
                 msgs -> Left $ (show (length msgs)) ++ " error(s): " ++ (joinWith ", " msgs)
 
-case_allRightEmpty = assertEqual
-                        "Error occurred"
-                        (Right [])
-                        (allRight ([]::([Either String String])))
+case_allRightEmpty = Right [] @=?  (allRight ([]::([Either String String])))
 
-case_allRightAllGood = assertEqual
-                        "Error occurred"
-                        (Right [12, 18, 3])
-                        (allRight [Right 12, Right 18, Right 3])
+case_allRightAllGood = Right [12, 18, 3] @=? allRight [Right 12, Right 18, Right 3]
 
-case_allRightOneBad = assertEqual
-                        "Error occurred"
-                        (Left "1 error(s): Wibble")
-                        (allRight [Right 12, Left "Wibble", Right 3])
+case_allRightOneBad = Left "1 error(s): Wibble" @=? allRight [Right 12, Left "Wibble", Right 3]
 
 
 
@@ -201,23 +136,15 @@ case_allRightOneBad = assertEqual
 parseListOfCounter :: [Counter] -> String -> Either String [Counter]
 parseListOfCounter cs s = allRight $ map (parseCounter cs) (splitIntoWords s)
 
-case_parseListOfCounterBlankWithWhitespace = assertEqual
-                                    "Error occurred"
-                                    (Right [])
-                                    (parseListOfCounter cs "    ")
-                                        where cs = [normalCounter "Bar", normalCounter "Baz"]
+case_parseListOfCounterBlankWithWhitespace = Right [] @=? parseListOfCounter cs "    "
+  where cs = [normalCounter "Bar", normalCounter "Baz"]
 
-case_parseListOfCounterNormal = assertEqual
-                                    "Error occurred"
-                                    (Right [normalCounter "Bar", normalCounter "Baz"])
-                                    (parseListOfCounter cs "Bar, Baz")
-                                        where cs = [normalCounter "Bar", normalCounter "Baz"]
+case_parseListOfCounterNormal = Right cs @=? parseListOfCounter cs "Bar, Baz"
+  where cs = [normalCounter "Bar", normalCounter "Baz"]
 
-case_parseListOfCounterNotUnsure = assertEqual
-                                    "Error occurred"
-                                    (Left "1 error(s): Counter \"Bar?\" cannot have a question mark")
-                                    (parseListOfCounter cs "Bar?, Baz")
-                                        where cs = [normalCounter "Bar", normalCounter "Baz"]
+case_parseListOfCounterNotUnsure = Left msg @=? parseListOfCounter cs "Bar?, Baz"
+  where cs = [normalCounter "Bar", normalCounter "Baz"]
+        msg = "1 error(s): Counter \"Bar?\" cannot have a question mark"
 
 
 
@@ -226,20 +153,14 @@ case_parseListOfCounterNotUnsure = assertEqual
 parseListOfUnsureAboutCounter :: [Counter] -> String -> Either String [(UnsureAbout Counter)]
 parseListOfUnsureAboutCounter cs s = allRight $ map (parseUnsureAboutCounter cs) (splitIntoWords s)
 
-case_parseListOfUnsureAboutCounterBlankWithWhitespace = assertEqual
-                                        "Error occurred"
-                                        (Right [])
-                                        (parseListOfUnsureAboutCounter cs "       ")
+case_parseListOfUnsureAboutCounterBlankWithWhitespace = Right [] @=? parseListOfUnsureAboutCounter cs "       "
                                           where cs = [foo, bar, baz, quux]
                                                 foo = normalCounter "Foo"
                                                 bar = emergencyCounter "Bar"
                                                 baz = normalCounter "Baz"
                                                 quux = normalCounter "Quux"
 
-case_parseListOfUnsureAboutCounterNormal = assertEqual
-                                        "Error occurred"
-                                        (Right [Definitely bar, Perhaps baz, Definitely quux])
-                                        (parseListOfUnsureAboutCounter cs "Bar, Baz? & Quux")
+case_parseListOfUnsureAboutCounterNormal = Right [Definitely bar, Perhaps baz, Definitely quux] @=? parseListOfUnsureAboutCounter cs "Bar, Baz? & Quux"
                                           where cs = [foo, bar, baz, quux]
                                                 foo = normalCounter "Foo"
                                                 bar = normalCounter "Bar"
@@ -284,20 +205,11 @@ splitSpacesAndDate defaultSpaces spacesAndDateWithWS =
             Right (spaces, (strip (parts !! 1)))
     else Right (defaultSpaces, spacesAndDate)
 
-case_splitSpacesAndDateDefault = assertEqual
-    "Error occurred"
-    (Right (4, "8th Jan"))
-    (splitSpacesAndDate 4 "  8th Jan ")
+case_splitSpacesAndDateDefault = Right (4, "8th Jan") @=? splitSpacesAndDate 4 "  8th Jan "
 
-case_splitSpacesAndDateNoneNeeded = assertEqual
-    "Error occurred"
-    (Right (0, "8th Jan"))
-    (splitSpacesAndDate 4 " {X}   8th Jan ")
+case_splitSpacesAndDateNoneNeeded = Right (0, "8th Jan") @=? splitSpacesAndDate 4 " {X}   8th Jan "
 
-case_splitSpacesAndDateUnusual = assertEqual
-    "Error occurred"
-    (Right (3, "8th Jan"))
-    (splitSpacesAndDate 4 " {3}   8th Jan ")
+case_splitSpacesAndDateUnusual = Right (3, "8th Jan") @=? splitSpacesAndDate 4 " {3}   8th Jan "
 
 
 

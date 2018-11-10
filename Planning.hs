@@ -70,25 +70,19 @@ canDo (Preferences ps) c = case c of
                                          then (if (p' == MustDo) then True else False)
                                          else (canDoEmergency ps c)
 
-case_canDoEmergencyListed = assertEqual
-                                    "Error occurred"
-                                    True
-                                    (canDo (Preferences [(emergencyCounter "Bob", MustDo)]) (emergencyCounter "Bob"))
+case_canDoEmergencyListed = canDo prefs (emergencyCounter "Bob") @? ""
+  where prefs = (Preferences [(emergencyCounter "Bob", MustDo)])
 
-case_canDoEmergencyUnlisted = assertEqual
-                                    "Error occurred"
-                                    False
-                                    (canDo (Preferences [(emergencyCounter "Bob", CanDo)]) (emergencyCounter "Bob"))
+predicate @/? message = not predicate @? message
 
-case_canDoGoodPrefs = assertEqual
-                                    "Error occurred"
-                                    True
-                                    (canDo (Preferences [(normalCounter "Alice", CannotDo)]) (normalCounter "Bob"))
+case_canDoEmergencyUnlisted = canDo prefs (emergencyCounter "Bob") @/? ""
+  where prefs = (Preferences [(emergencyCounter "Bob", CanDo)])
 
-case_canDoBadPrefs = assertEqual
-                                    "Error occurred"
-                                    False
-                                    (canDo (Preferences [(normalCounter "Alice", CannotDo)]) (normalCounter "Alice"))
+case_canDoGoodPrefs = canDo prefs (normalCounter "Bob") @? ""
+  where prefs = Preferences [(normalCounter "Alice", CannotDo)]
+
+case_canDoBadPrefs = canDo prefs (normalCounter "Alice") @/? ""
+  where prefs = Preferences [(normalCounter "Alice", CannotDo)]
 
 
 
@@ -109,36 +103,18 @@ acceptable (Slot n t p) cs = ((length cs) == (fromIntegral n))
                              && (all (canDo p) cs)
                              && allMustDos p cs
 
-case_acceptableEmpty = assertEqual
-                                    "Error occurred"
-                                    True
-                                    (acceptable (Slot 0 "foo" allFree) [])
+case_acceptableEmpty = acceptable (Slot 0 "foo" allFree) [] @? ""
 
-case_acceptableMatch = assertEqual
-                                    "Error occurred"
-                                    True
-                                    (acceptable (Slot 1 "foo" allFree) [normalCounter "Alice"])
+case_acceptableMatch = acceptable (Slot 1 "foo" allFree) [normalCounter "Alice"] @? ""
 
-case_acceptableUnder = assertEqual
-                                    "Error occurred"
-                                    False
-                                    (acceptable (Slot 2 "foo" allFree) [normalCounter "Bob"])
+case_acceptableUnder = acceptable (Slot 2 "foo" allFree) [normalCounter "Bob"] @/? ""
 
-case_acceptableOver = assertEqual
-                                    "Error occurred"
-                                    False
-                                    (acceptable (Slot 1 "foo" allFree)
-                                        [normalCounter "Alice", normalCounter "Bob"])
+case_acceptableOver = acceptable (Slot 1 "foo" allFree)
+                                 [normalCounter "Alice", normalCounter "Bob"] @/? ""
 
-case_acceptableGoodPrefs = assertEqual
-                                        "Error occurred"
-                                        True
-                                        (acceptable (Slot 1 "foo" (Preferences [(normalCounter "Alice", CannotDo)])) [normalCounter "Bob"])
+case_acceptableGoodPrefs = acceptable (Slot 1 "foo" (Preferences [(normalCounter "Alice", CannotDo)])) [normalCounter "Bob"] @? ""
 
-case_acceptableBadPrefs = assertEqual
-                                        "Error occurred"
-                                        False
-                                        (acceptable (Slot 1 "foo" (Preferences [(normalCounter "Alice", CannotDo)])) [normalCounter "Alice"])
+case_acceptableBadPrefs = acceptable (Slot 1 "foo" (Preferences [(normalCounter "Alice", CannotDo)])) [normalCounter "Alice"] @/? ""
 
 
 
@@ -152,24 +128,15 @@ usableRotas cs ss = [ Rota assignments | assignments <- usableRotas' cs ss ]
                                              , others <- usableRotas' counters slots ]
         validFor slot counters = filter (acceptable slot) (powerset counters)
 
-case_noUsableRotas = assertEqual
-                            "Error occurred"
-                            0
-                            (length (usableRotas counters slots))
+case_noUsableRotas = 0 @=? length (usableRotas counters slots)
   where counters = [normalCounter "Alice", normalCounter "Bob"]
         slots = [Slot 5 "1st January" allFree, Slot 2 "2nd January" allFree]
 
-case_usableRotas = assertEqual
-                            "Error occurred"
-                            2
-                            (length (usableRotas counters slots))
+case_usableRotas = 2 @=? length (usableRotas counters slots)
   where counters = [normalCounter "Alice", normalCounter "Bob"]
         slots = [Slot 1 "1st January" allFree, Slot 2 "2nd January" allFree]
 
-case_usableRotasBlankSlots = assertEqual
-                    "Error occurred"
-                    1
-                    (length (usableRotas counters slots))
+case_usableRotasBlankSlots = 1 @=? length (usableRotas counters slots)
   where counters = [normalCounter "Alice", normalCounter "Bob"]
         slots = [Slot 2 "Two People" allFree, Slot 0 "Nobody Needed" allFree]
 

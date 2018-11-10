@@ -38,25 +38,13 @@ pairOff [] = []
 pairOff (x:[]) = []
 pairOff (x:y:ys) = (x, y):(pairOff (y:ys))
 
-case_pairOffEmpty = assertEqual
-                                    "Error occurred"
-                                    ([] :: [(Bool, Bool)])
-                                    (pairOff [])
+case_pairOffEmpty = ([] :: [(Bool, Bool)]) @=? pairOff []
 
-case_pairOffSingle = assertEqual
-                                    "Error occurred"
-                                    []
-                                    (pairOff ["foo"])
+case_pairOffSingle = [] @=? pairOff ["foo"]
 
-case_pairOffDouble = assertEqual
-                                    "Error occurred"
-                                    [("foo", "bar")]
-                                    (pairOff ["foo", "bar"])
+case_pairOffDouble = [("foo", "bar")] @=? pairOff ["foo", "bar"]
 
-case_pairOffMany = assertEqual
-                                    "Error occurred"
-                                    [(0, 1), (1, 4), (4, 9), (9, 16)]
-                                    (pairOff [0, 1, 4, 9, 16])
+case_pairOffMany = [(0, 1), (1, 4), (4, 9), (9, 16)] @=? pairOff [0, 1, 4, 9, 16]
 
 
 
