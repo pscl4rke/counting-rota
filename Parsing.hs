@@ -248,5 +248,59 @@ case_parseListOfUnsureAboutCounterNormal = assertEqual
 
 
 
+
+ensureOnlyTwoParts :: [a] -> Either String ()
+ensureOnlyTwoParts xs | (length xs) == 2 = Right ()
+                      | otherwise = Left $ "You need 2 parts"
+
+
+
+
+maybeRead x = case (reads x) of
+                [(a, b)] -> Just a
+                _ -> Nothing
+
+
+
+
+readSpaces :: String -> Either String Integer
+readSpaces text | text == "X" = Right 0
+                | otherwise = case (maybeRead text) of
+                       Nothing -> Left $ "Invalid number of slots " ++ text
+                       Just spaces -> Right spaces
+
+
+
+
+splitSpacesAndDate :: Integer -> String -> Either String (Integer, String)
+splitSpacesAndDate defaultSpaces [] = Right (defaultSpaces, "")
+splitSpacesAndDate defaultSpaces spacesAndDateWithWS =
+    let spacesAndDate = strip spacesAndDateWithWS in
+    if (head spacesAndDate) == '{'
+    then
+        let parts = separateOn "}" (tail spacesAndDate) in
+        do  ensureOnlyTwoParts parts
+            spaces <- readSpaces (parts !! 0)
+            Right (spaces, (strip (parts !! 1)))
+    else Right (defaultSpaces, spacesAndDate)
+
+case_splitSpacesAndDateDefault = assertEqual
+    "Error occurred"
+    (Right (4, "8th Jan"))
+    (splitSpacesAndDate 4 "  8th Jan ")
+
+case_splitSpacesAndDateNoneNeeded = assertEqual
+    "Error occurred"
+    (Right (0, "8th Jan"))
+    (splitSpacesAndDate 4 " {X}   8th Jan ")
+
+case_splitSpacesAndDateUnusual = assertEqual
+    "Error occurred"
+    (Right (3, "8th Jan"))
+    (splitSpacesAndDate 4 " {3}   8th Jan ")
+
+
+
+
 tests :: TestTree
 tests = $(testGroupGenerator)

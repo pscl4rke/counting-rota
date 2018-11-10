@@ -109,6 +109,11 @@ acceptable (Slot n t p) cs = ((length cs) == (fromIntegral n))
                              && (all (canDo p) cs)
                              && allMustDos p cs
 
+case_acceptableEmpty = assertEqual
+                                    "Error occurred"
+                                    True
+                                    (acceptable (Slot 0 "foo" allFree) [])
+
 case_acceptableMatch = assertEqual
                                     "Error occurred"
                                     True
@@ -160,6 +165,13 @@ case_usableRotas = assertEqual
                             (length (usableRotas counters slots))
   where counters = [normalCounter "Alice", normalCounter "Bob"]
         slots = [Slot 1 "1st January" allFree, Slot 2 "2nd January" allFree]
+
+case_usableRotasBlankSlots = assertEqual
+                    "Error occurred"
+                    1
+                    (length (usableRotas counters slots))
+  where counters = [normalCounter "Alice", normalCounter "Bob"]
+        slots = [Slot 2 "Two People" allFree, Slot 0 "Nobody Needed" allFree]
 
 
 

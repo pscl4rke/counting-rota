@@ -39,18 +39,20 @@ r line = case (splitOn "|" line) of
 
 s :: String -> Slot
 s line = case (splitOn "|" line) of
-    [_, date, yes, no, _] ->
+    [_, spacesAndDate, yes, no, _] ->
         let prefs = (q yes) `without` (p no) in
-        let countersneeded = 2 in -- FIXME
-        Slot countersneeded (strip date) prefs
+        let defaultSpaces = 2 in  -- FIXME duplicating rota.hs
+        case (splitSpacesAndDate defaultSpaces spacesAndDate) of
+            Left message -> error message
+            Right (spaces, date) -> Slot spaces (strip date) prefs
     _ -> error ("Invalid columns: '" ++ line ++ "'")
 
 slots =
     [ s "|     1st Jan    | Carol    |               |"
     , s "|     2nd Jan    |          |               |"
-    , s "|     3rd Jan    |          |               |"
+    , s "| {X} 3rd Jan    |          |               |"
     , s "|     4th Jan    |          | Dave, Eve     |"
     , s "|     5th Jan    |          | Alice         |"
     , s "|     6th Jan    |          | Bob?, Dave    |"
-    , s "|     7th Jan    |          |               |"
+    , s "| {3} 7th Jan    |          |               |"
     ]

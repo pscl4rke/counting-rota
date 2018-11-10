@@ -50,6 +50,15 @@ showNotAvailable prefs = showStrings (map showSomething (notAvailable prefs))
 
 
 
+displaySize :: Integer -> Integer -> String
+displaySize defaultSize size | size == defaultSize = "   "
+                             | size == 0 = "{X}"
+                             | otherwise = "{" ++ (show size) ++ "}"
+
+
+
+
+
 display :: [Counter] -> Rota -> IO ()
 display allCounters rota = do
     putStrLn (replicate 72 '=')
@@ -58,8 +67,10 @@ display allCounters rota = do
     let (Rota slotmap) = rota
     forM_ slotmap $ \(slot, theseCounters) -> do
         let Slot size description prefs = slot
+        let defaultSize = 2 -- FIXME duplicating Requirements.hs
         putStrLn $ "| "
-                    ++ (padRight 13 description)
+                    ++ (displaySize defaultSize size)
+                    ++ (padRight 10 description)
                     ++ " | "
                     ++ (padLeft 24 (showNames theseCounters))
                     ++ "| "
