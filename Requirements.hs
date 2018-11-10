@@ -32,11 +32,6 @@ p names = case (parseListOfUnsureAboutCounter counters names) of
     Right unsurecounters -> unsurecounters
     Left msg -> error ("Cannot parse availability: " ++ msg)
 
-r :: String -> Preferences
-r line = case (splitOn "|" line) of
-    [left, right] -> ((q left) `without` (p right))
-    _ -> error ("Invalid columns: '" ++ line ++ "'")
-
 s :: String -> Slot
 s line = case (splitOn "|" line) of
     [_, spacesAndDate, yes, no, _] ->
