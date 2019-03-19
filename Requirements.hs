@@ -42,12 +42,15 @@ s line = case (splitOn "|" line) of
             Right (spaces, date) -> Slot spaces (strip date) prefs
     _ -> error ("Invalid columns: '" ++ line ++ "'")
 
-slots =
-    [ s "|     1st Jan    | Carol    |               |"
-    , s "|     2nd Jan    |          |               |"
-    , s "| {X} 3rd Jan    |          |               |"
-    , s "|     4th Jan    |          | Dave, Eve     |"
-    , s "|     5th Jan    |          | Alice         |"
-    , s "|     6th Jan    |          | Bob?, Dave    |"
-    , s "| {3} 7th Jan    |          |               |"
-    ]
+textIn = "\
+\|     1st Jan    | Carol    |               |\n\
+\|     2nd Jan    |          |               |\n\
+\| {X} 3rd Jan    |          |               |\n\
+\|     4th Jan    |          | Dave, Eve     |\n\
+\|     5th Jan    |          | Alice         |\n\
+\|     6th Jan    |          | Bob?, Dave    |\n\
+\| {3} 7th Jan    |          |               |\
+\ "
+
+textLines = splitOn "\n" textIn
+slots = map s textLines
