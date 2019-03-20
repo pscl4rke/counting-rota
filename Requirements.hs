@@ -22,8 +22,8 @@ counters =
     , eve
     ]
 
-parseLine :: String -> Either String Slot
-parseLine line = case (splitOn "|" line) of
+parseLine :: [Counter] -> String -> Either String Slot
+parseLine counters line = case (splitOn "|" line) of
     [_, spacesAndDate, yes, no, _] -> do
         yes_prefs <- parseListOfCounter counters yes
         no_prefs <- parseListOfUnsureAboutCounter counters no
@@ -34,7 +34,7 @@ parseLine line = case (splitOn "|" line) of
     _ -> Left ("Invalid columns: '" ++ line ++ "'")
 
 s :: String -> Slot
-s line = case (parseLine line) of
+s line = case (parseLine counters line) of
     Left message -> error message
     Right slot -> slot
 
