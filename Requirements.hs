@@ -22,25 +22,21 @@ counters =
     , eve
     ]
 
-q :: String -> [Counter]
-q names = case (parseListOfCounter counters names) of
-    Right counters -> counters
-    Left msg -> error ("Cannot parse counters: " ++ msg)
-
-p :: String -> [UnsureAbout Counter]
-p names = case (parseListOfUnsureAboutCounter counters names) of
-    Right unsurecounters -> unsurecounters
-    Left msg -> error ("Cannot parse availability: " ++ msg)
+parseLine :: String -> Either String Slot
+parseLine line = case (splitOn "|" line) of
+    [_, spacesAndDate, yes, no, _] -> do
+        yes_prefs <- parseListOfCounter counters yes
+        no_prefs <- parseListOfUnsureAboutCounter counters no
+        let prefs = yes_prefs `without` no_prefs
+        let defaultSpaces = 2  -- FIXME duplicating rota.hs
+        (spaces, date) <- splitSpacesAndDate defaultSpaces spacesAndDate
+        Right $ Slot spaces (strip date) prefs
+    _ -> Left ("Invalid columns: '" ++ line ++ "'")
 
 s :: String -> Slot
-s line = case (splitOn "|" line) of
-    [_, spacesAndDate, yes, no, _] ->
-        let prefs = (q yes) `without` (p no) in
-        let defaultSpaces = 2 in  -- FIXME duplicating rota.hs
-        case (splitSpacesAndDate defaultSpaces spacesAndDate) of
-            Left message -> error message
-            Right (spaces, date) -> Slot spaces (strip date) prefs
-    _ -> error ("Invalid columns: '" ++ line ++ "'")
+s line = case (parseLine line) of
+    Left message -> error message
+    Right slot -> slot
 
 textIn = "\
 \|     1st Jan    | Carol    |               |\n\
