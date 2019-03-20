@@ -6,6 +6,7 @@ module Parsing where
 import Data.Char
 import Data.Either
 import Data.List
+import Data.List.Split
 
 import Test.Tasty
 import Test.Tasty.TH
@@ -210,6 +211,40 @@ case_splitSpacesAndDateDefault = Right (4, "8th Jan") @=? splitSpacesAndDate 4 "
 case_splitSpacesAndDateNoneNeeded = Right (0, "8th Jan") @=? splitSpacesAndDate 4 " {X}   8th Jan "
 
 case_splitSpacesAndDateUnusual = Right (3, "8th Jan") @=? splitSpacesAndDate 4 " {3}   8th Jan "
+
+
+
+
+
+
+parseLine :: [Counter] -> String -> Either String Slot
+parseLine counters line = case (splitOn "|" line) of
+    [_, spacesAndDate, yes, no, _] -> do
+        yes_prefs <- parseListOfCounter counters yes
+        no_prefs <- parseListOfUnsureAboutCounter counters no
+        let prefs = yes_prefs `without` no_prefs
+        let defaultSpaces = 2  -- FIXME duplicating rota.hs
+        (spaces, date) <- splitSpacesAndDate defaultSpaces spacesAndDate
+        Right $ Slot spaces (strip date) prefs
+    _ -> Left ("Invalid columns: '" ++ line ++ "'")
+
+case_parseLineGoodBare = Right (Slot 2 "1st Jan" allFree)
+                         @=? parseLine [] " |  1st Jan |  |  | "
+
+case_parseLineGoodComplicated = Right (Slot 3 "2nd Jan" (allExcept [two]))
+                                @=? parseLine cs "| {3} 2nd Jan |  | Two|"
+                                where   one = normalCounter "One"
+                                        two = normalCounter "Two"
+                                        three = normalCounter "Three"
+                                        four = normalCounter "Four"
+                                        cs = [one, two, three, four]
+
+case_parseLineSillyColumns = Left "Invalid columns: '||||||||||'"
+                             @=? parseLine [] "||||||||||"
+
+case_parseLineInvalidName = Left "1 error(s): Did not recognise \"Mickey\" as a counter"
+                            @=? parseLine cs "| 4th Jan | Mickey |  |"
+                            where cs = [normalCounter "Alfa", normalCounter "Beeta"]
 
 
 

@@ -22,17 +22,6 @@ counters =
     , eve
     ]
 
-parseLine :: [Counter] -> String -> Either String Slot
-parseLine counters line = case (splitOn "|" line) of
-    [_, spacesAndDate, yes, no, _] -> do
-        yes_prefs <- parseListOfCounter counters yes
-        no_prefs <- parseListOfUnsureAboutCounter counters no
-        let prefs = yes_prefs `without` no_prefs
-        let defaultSpaces = 2  -- FIXME duplicating rota.hs
-        (spaces, date) <- splitSpacesAndDate defaultSpaces spacesAndDate
-        Right $ Slot spaces (strip date) prefs
-    _ -> Left ("Invalid columns: '" ++ line ++ "'")
-
 s :: String -> Slot
 s line = case (parseLine counters line) of
     Left message -> error message

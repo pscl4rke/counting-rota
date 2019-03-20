@@ -17,10 +17,10 @@ data Availability = MustDo | CanDo | WantsToAvoid | CannotDo
   deriving (Show, Eq)
 
 data Preferences = Preferences [(Counter, Availability)]
-  deriving Show
+  deriving (Show, Eq)
 
 data Slot = Slot Integer String Preferences
-  deriving Show
+  deriving (Show, Eq)
 
 data Counter = Counter Bool String
   deriving (Show, Eq)
