@@ -28,14 +28,30 @@ s line = case (parseLine counters line) of
     Right slot -> slot
 
 textIn = "\
+\>>>>> ON\n\
 \|     1st Jan    | Carol    |               |\n\
 \|     2nd Jan    |          |               |\n\
 \| {X} 3rd Jan    |          |               |\n\
 \|     4th Jan    |          | Dave, Eve     |\n\
 \|     5th Jan    |          | Alice         |\n\
 \|     6th Jan    |          | Bob?, Dave    |\n\
-\| {3} 7th Jan    |          |               |\
+\| {3} 7th Jan    |          |               |\n\
+\<<<<< OFF\n\
 \ "
 
+
+isOnSwitch x  = (x == ">>>>> ON")
+isOffSwitch x = (x == "<<<<< OFF")
+
+onlyOn :: Bool -> [String] -> [String]
+onlyOn _ [] = []
+onlyOn False (x:xs) | isOffSwitch x = onlyOn False xs
+                    | isOnSwitch x  = onlyOn True xs
+                    | otherwise     = onlyOn False xs
+onlyOn True (x:xs)  | isOffSwitch x = onlyOn False xs
+                    | isOnSwitch x  = onlyOn True xs
+                    | otherwise     = x:(onlyOn True xs)
+
+
 textLines = splitOn "\n" textIn
-slots = map s textLines
+slots = map s $ onlyOn False textLines
