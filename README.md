@@ -16,11 +16,12 @@ These are some of the properties of the rotas it generates:
 * Evenly spread among people
 * Not serving too many times in a row
 * Not always putting the same people together
+* Handles "can do but prefer not to"
+* Copes with varying numbers of people
 
 These are the properties I want but haven't yet got:
 
 * Avoiding massive gaps in a counter's schedule
 * Takes into account service so far on previous rotas
-* Handle "can do but prefer not to"
 * Ensures enough combined experience
 
