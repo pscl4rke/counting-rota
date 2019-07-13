@@ -1,0 +1,15 @@
+
+The text before the ">>>>> ON" line is ignored
+
+>>>>> ON
+|     1st Jan    | Carol    |               |
+|     2nd Jan    |          |               |
+| {X} 3rd Jan    |          |               |
+|     4th Jan    |          | Dave, Eve     |
+|     5th Jan    |          | Alice         |
+|     6th Jan    |          | Bob?, Dave    |
+| {3} 7th Jan    |          |               |
+<<<<< OFF
+
+The text after the "<<<<< OFF" line is also ignored
+

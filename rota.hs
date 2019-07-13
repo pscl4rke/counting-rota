@@ -97,7 +97,7 @@ main = do
     let command = fromMaybe "help" $ listToMaybe args
     case command of
         "rota" -> do
-            slots <- loadSlots
+            slots <- loadSlotsFromPath "./example.rota"
             let rotas = sortOn (overallStrikes counters) $ usableRotas counters slots
             case (length rotas) of
                 0 -> putStrLn "There are no rotas that could be generated"

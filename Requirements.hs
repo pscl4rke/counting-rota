@@ -27,19 +27,6 @@ s line = case (parseLine counters line) of
     Left message -> error message
     Right slot -> slot
 
-textIn = "\
-\>>>>> ON\n\
-\|     1st Jan    | Carol    |               |\n\
-\|     2nd Jan    |          |               |\n\
-\| {X} 3rd Jan    |          |               |\n\
-\|     4th Jan    |          | Dave, Eve     |\n\
-\|     5th Jan    |          | Alice         |\n\
-\|     6th Jan    |          | Bob?, Dave    |\n\
-\| {3} 7th Jan    |          |               |\n\
-\<<<<< OFF\n\
-\ "
-
-
 isOnSwitch x  = (x == ">>>>> ON")
 isOffSwitch x = (x == "<<<<< OFF")
 
@@ -53,7 +40,9 @@ onlyOn True (x:xs)  | isOffSwitch x = onlyOn False xs
                     | otherwise     = x:(onlyOn True xs)
 
 
-textLines = splitOn "\n" textIn
-
-loadSlots :: IO [Slot]
-loadSlots = return $ map s $ onlyOn False textLines
+loadSlotsFromPath :: String -> IO [Slot]
+loadSlotsFromPath path = do
+    textFromFile <- readFile path
+    let linesFromFile = splitOn "\n" textFromFile
+    let linesToConsider = onlyOn False linesFromFile
+    return $ map s linesToConsider
