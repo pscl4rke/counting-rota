@@ -54,4 +54,6 @@ onlyOn True (x:xs)  | isOffSwitch x = onlyOn False xs
 
 
 textLines = splitOn "\n" textIn
-slots = map s $ onlyOn False textLines
+
+loadSlots :: IO [Slot]
+loadSlots = return $ map s $ onlyOn False textLines
