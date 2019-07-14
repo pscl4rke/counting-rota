@@ -1,7 +1,6 @@
 
 import Control.Monad (forM_)
 import Data.List (sortBy)
-import Data.Maybe (fromMaybe, listToMaybe)
 import Data.Ord (comparing)
 import System.Environment (getArgs)
 
@@ -94,10 +93,10 @@ sortOn f =
 main :: IO ()
 main = do
     args <- getArgs
-    let command = fromMaybe "help" $ listToMaybe args
+    let command = if (null args) then ["help"] else args
     case command of
-        "rota" -> do
-            slots <- loadSlotsFromPath "./example.rota"
+        ["rota", filePath] -> do
+            slots <- loadSlotsFromPath filePath
             let rotas = sortOn (overallStrikes counters) $ usableRotas counters slots
             case (length rotas) of
                 0 -> putStrLn "There are no rotas that could be generated"
@@ -105,8 +104,10 @@ main = do
                     putStrLn ""
                     displayScorecard $ scorecard counters rota
                     display counters rota
-        "blank" -> do
+        ["blank"] -> do
             sundays <- nextFifteenSundays
             display counters (blankRota 2 sundays)
         _ -> do
-            putStrLn "Want to write help here"
+            putStrLn "Usage:"
+            putStrLn "  rota blank          Generate a blank rota"
+            putStrLn "  rota rota <file>    Suggest satisfactory rotas"
