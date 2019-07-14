@@ -106,7 +106,7 @@ main = do
                     display counters rota
         ["blank"] -> do
             sundays <- nextFifteenSundays
-            display counters (blankRota 2 sundays)
+            display [] (blankRota 2 sundays)
         _ -> do
             putStrLn "Usage:"
             putStrLn "  rota blank          Generate a blank rota"
