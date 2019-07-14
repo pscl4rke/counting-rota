@@ -40,9 +40,13 @@ onlyOn True (x:xs)  | isOffSwitch x = onlyOn False xs
                     | otherwise     = x:(onlyOn True xs)
 
 
+loadSlotsFromLines :: [String] -> [Slot]
+loadSlotsFromLines inputLines =
+    let linesToConsider = onlyOn False inputLines
+    in map s linesToConsider
+
+
 loadSlotsFromPath :: String -> IO [Slot]
 loadSlotsFromPath path = do
     textFromFile <- readFile path
-    let linesFromFile = splitOn "\n" textFromFile
-    let linesToConsider = onlyOn False linesFromFile
-    return $ map s linesToConsider
+    return $ loadSlotsFromLines (splitOn "\n" textFromFile)
