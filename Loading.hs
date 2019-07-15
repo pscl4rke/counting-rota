@@ -16,19 +16,30 @@ import Requirements (hardcodedCounters, loadSlotsFromLines)
 
 
 
-loadCountersAndSlotsFromPath :: String -> IO ([Counter], [Slot])
-loadCountersAndSlotsFromPath path = do
+data LoadedFile = LoadedFile
+    { loadedCounters :: [Counter]
+    , loadedSlots :: [Slot]
+    }
+
+
+
+
+loadFromPath :: String -> IO LoadedFile
+loadFromPath path = do
     textFromFile <- readFile path
     let loadedSlots = loadSlotsFromLines (splitOn "\n" textFromFile)
-    return (hardcodedCounters, loadedSlots)
+    return LoadedFile
+        { loadedCounters = hardcodedCounters
+        , loadedSlots = loadedSlots
+        }
 
 case_loadExampleCounters = do
-    (counters, slots) <- loadCountersAndSlotsFromPath "example.rota"
-    hardcodedCounters @=? counters
+    loadedFile <- loadFromPath "example.rota"
+    hardcodedCounters @=? loadedCounters loadedFile
 
 case_loadExampleSlotsLength = do
-    (counters, slots) <- loadCountersAndSlotsFromPath "example.rota"
-    7 @=? length slots
+    loadedFile <- loadFromPath "example.rota"
+    7 @=? length (loadedSlots loadedFile)
 
 
 
