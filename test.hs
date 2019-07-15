@@ -10,6 +10,7 @@ import qualified Planning
 import qualified Scoring
 import qualified Presenting
 import qualified Parsing
+import qualified Loading
 
 -- GENERAL TESTING NOTES!
 --  The API: https://github.com/feuerbach/tasty/blob/master/hunit/Test/Tasty/HUnit/Orig.hs
@@ -23,6 +24,7 @@ allTests =
     , Scoring.tests
     , Presenting.tests
     , Parsing.tests
+    , Loading.tests
     ]
 
 main = defaultMain $ testGroup "counting-rota" allTests

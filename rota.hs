@@ -5,9 +5,9 @@ import Data.Ord (comparing)
 import System.Environment (getArgs)
 
 import Dating
+import Loading
 import Planning
 import Presenting
-import Requirements
 import Scoring
 
 

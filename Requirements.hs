@@ -1,8 +1,6 @@
 
 module Requirements where
 
-import Data.List.Split (splitOn)
-
 import Parsing
 import Planning
 
@@ -44,10 +42,3 @@ loadSlotsFromLines :: [String] -> [Slot]
 loadSlotsFromLines inputLines =
     let linesToConsider = onlyOn False inputLines
     in map (s hardcodedCounters) linesToConsider
-
-
-loadCountersAndSlotsFromPath :: String -> IO ([Counter], [Slot])
-loadCountersAndSlotsFromPath path = do
-    textFromFile <- readFile path
-    let loadedSlots = loadSlotsFromLines (splitOn "\n" textFromFile)
-    return (hardcodedCounters, loadedSlots)
