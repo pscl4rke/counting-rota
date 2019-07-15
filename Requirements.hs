@@ -46,7 +46,8 @@ loadSlotsFromLines inputLines =
     in map (s hardcodedCounters) linesToConsider
 
 
-loadSlotsFromPath :: String -> IO [Slot]
-loadSlotsFromPath path = do
+loadCountersAndSlotsFromPath :: String -> IO ([Counter], [Slot])
+loadCountersAndSlotsFromPath path = do
     textFromFile <- readFile path
-    return $ loadSlotsFromLines (splitOn "\n" textFromFile)
+    let loadedSlots = loadSlotsFromLines (splitOn "\n" textFromFile)
+    return (hardcodedCounters, loadedSlots)

@@ -96,8 +96,7 @@ main = do
     let command = if (null args) then ["help"] else args
     case command of
         ["rota", filePath] -> do
-            let counters = hardcodedCounters
-            slots <- loadSlotsFromPath filePath
+            (counters, slots) <- loadCountersAndSlotsFromPath filePath
             let rotas = sortOn (overallStrikes counters) $ usableRotas counters slots
             case (length rotas) of
                 0 -> putStrLn "There are no rotas that could be generated"
