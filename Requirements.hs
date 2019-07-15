@@ -14,7 +14,7 @@ carol =     Counter False "Carol"
 dave =      Counter True  "Dave"
 eve =       Counter True  "Eve"
 
-counters =
+hardcodedCounters =
     [ alice
     , bob
     , carol
@@ -22,8 +22,8 @@ counters =
     , eve
     ]
 
-s :: String -> Slot
-s line = case (parseLine counters line) of
+s :: [Counter] -> String -> Slot
+s counters line = case (parseLine counters line) of
     Left message -> error message
     Right slot -> slot
 
@@ -43,7 +43,7 @@ onlyOn True (x:xs)  | isOffSwitch x = onlyOn False xs
 loadSlotsFromLines :: [String] -> [Slot]
 loadSlotsFromLines inputLines =
     let linesToConsider = onlyOn False inputLines
-    in map s linesToConsider
+    in map (s hardcodedCounters) linesToConsider
 
 
 loadSlotsFromPath :: String -> IO [Slot]
