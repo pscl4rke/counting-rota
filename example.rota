@@ -12,8 +12,8 @@ The text before the ">>>>> ON" line is ignored
 |       5th Jan |                         | Alice                      |
 |       6th Jan |                         | Bob? & Dave                |
 | {3}   7th Jan |                         |                            |
-<<<<< OFF
 ========================================================================
+<<<<< OFF
 
 The text after the "<<<<< OFF" line is also ignored
 

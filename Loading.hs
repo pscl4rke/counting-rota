@@ -4,7 +4,7 @@
 module Loading where
 
 import Data.List.Split (splitOn)
-import Data.List (foldl')
+import Data.List (foldl', isPrefixOf)
 
 import Test.Tasty
 import Test.Tasty.TH
@@ -62,6 +62,7 @@ digestLineIgnoring fileState line = case line of
 digestLineLoading :: LoadedFile -> String -> LoadedFile
 digestLineLoading fileState line
     | line == "<<<<< OFF" = fileState { isLoading = False }
+    | "===" `isPrefixOf` line = fileState
     | otherwise = case (parseLine (loadedCounters fileState) line) of
         Left message -> error $ "Line " ++ (show (linesSeen fileState)) ++ ": " ++ message
         Right newSlot -> addSlot fileState newSlot
