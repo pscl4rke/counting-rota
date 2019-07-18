@@ -22,6 +22,7 @@ data LoadedFile = LoadedFile
     { loadedCounters :: [Counter]
     , loadedSlots :: [Slot]
     , isLoading :: Bool
+    , linesSeen :: Int
     }
     deriving Show
 
@@ -30,6 +31,7 @@ newLoadedFile = LoadedFile
     { loadedCounters = []
     , loadedSlots = []
     , isLoading = False
+    , linesSeen = 0
     }
 
 
@@ -39,12 +41,18 @@ addSlot fileState newSlot =
     in fileState { loadedSlots = appendedList }
 
 
+incremented :: LoadedFile -> LoadedFile
+incremented fileState =
+    let plusOne = (linesSeen fileState) + 1
+    in fileState { linesSeen = plusOne }
+
+
 
 
 digestLine :: LoadedFile -> String -> LoadedFile
 digestLine fileState line = case (isLoading fileState) of
-    True -> digestLineLoading fileState line
-    False -> digestLineIgnoring fileState line
+    True -> digestLineLoading (incremented fileState) line
+    False -> digestLineIgnoring (incremented fileState) line
 
 digestLineIgnoring :: LoadedFile -> String -> LoadedFile
 digestLineIgnoring fileState line = case line of
@@ -55,7 +63,7 @@ digestLineLoading :: LoadedFile -> String -> LoadedFile
 digestLineLoading fileState line
     | line == "<<<<< OFF" = fileState { isLoading = False }
     | otherwise = case (parseLine (loadedCounters fileState) line) of
-        Left message -> error message
+        Left message -> error $ "Line " ++ (show (linesSeen fileState)) ++ ": " ++ message
         Right newSlot -> addSlot fileState newSlot
 
 
