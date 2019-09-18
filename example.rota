@@ -1,4 +1,8 @@
 
+>>>>> ON
+set defaultSlotSize 2
+<<<<< OFF
+
 The text before the ">>>>> ON" line is ignored
 
 >>>>> ON

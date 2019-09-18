@@ -64,6 +64,11 @@ digestLineIgnoring fileState line = case line of
 digestLineLoading :: LoadedFile -> String -> LoadedFile
 digestLineLoading fileState line
     | line == "<<<<< OFF" = fileState { isLoading = False }
+    | "set " `isPrefixOf` line =
+            let [_set, key, value] = words line in
+            case key of
+                "defaultSlotSize" -> fileState { loadedDefaultSlotSize = (read value) }
+                _ -> error $ "Unknown setting: " ++ key
     | "===" `isPrefixOf` line = fileState
     | isHeader line = fileState
     | otherwise = case (parseLine (loadedDefaultSlotSize fileState) (loadedCounters fileState) line) of
@@ -71,6 +76,11 @@ digestLineLoading fileState line
         Right newSlot -> addSlot fileState newSlot
 
 isHeader line = "Not Available" `isInfixOf` line
+
+case_digestLine_defaultSlotSize = do
+    let initial = newLoadedFile { isLoading = True }
+    let line = "set defaultSlotSize 1234"
+    1234 @=? loadedDefaultSlotSize (digestLine initial line)
 
 
 
