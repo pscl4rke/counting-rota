@@ -58,15 +58,14 @@ displaySize defaultSize size | size == defaultSize = "   "
 
 
 
-display :: [Counter] -> Rota -> IO ()
-display allCounters rota = do
+display :: Integer -> [Counter] -> Rota -> IO ()
+display defaultSize allCounters rota = do
     putStrLn (replicate 72 '=')
     putStrLn "|               | Counting                | Not Available              |"
     putStrLn (replicate 72 '=')
     let (Rota slotmap) = rota
     forM_ slotmap $ \(slot, theseCounters) -> do
         let Slot size description prefs = slot
-        let defaultSize = 2 -- FIXME duplicating Requirements.hs
         putStrLn $ "| "
                     ++ (displaySize defaultSize size)
                     ++ (padRight 10 description)
@@ -97,6 +96,7 @@ main = do
     case command of
         ["rota", filePath] -> do
             loadedFile <- loadFromPath filePath
+            let defaultSlotSize = 2
             let counters = loadedCounters loadedFile
             let slots = loadedSlots loadedFile
             let rotas = sortOn (overallStrikes counters) $ usableRotas counters slots
@@ -105,10 +105,10 @@ main = do
                 _ -> forM_ (take 5 rotas) $ \rota -> do
                     putStrLn ""
                     displayScorecard $ scorecard counters rota
-                    display counters rota
+                    display defaultSlotSize counters rota
         ["blank"] -> do
             sundays <- nextFifteenSundays
-            display [] (blankRota 2 sundays)
+            display 2 [] (blankRota 2 sundays)
         _ -> do
             putStrLn "Usage:"
             putStrLn "  rota blank          Generate a blank rota"

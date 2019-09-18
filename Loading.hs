@@ -21,8 +21,9 @@ import Requirements (hardcodedCounters)
 data LoadedFile = LoadedFile
     { loadedCounters :: [Counter]
     , loadedSlots :: [Slot]
+    , loadedDefaultSlotSize :: Integer
     , isLoading :: Bool
-    , linesSeen :: Int
+    , linesSeen :: Integer
     }
     deriving Show
 
@@ -30,6 +31,7 @@ data LoadedFile = LoadedFile
 newLoadedFile = LoadedFile
     { loadedCounters = []
     , loadedSlots = []
+    , loadedDefaultSlotSize = 2  -- FIXME
     , isLoading = False
     , linesSeen = 0
     }
@@ -64,7 +66,7 @@ digestLineLoading fileState line
     | line == "<<<<< OFF" = fileState { isLoading = False }
     | "===" `isPrefixOf` line = fileState
     | isHeader line = fileState
-    | otherwise = case (parseLine (loadedCounters fileState) line) of
+    | otherwise = case (parseLine (loadedDefaultSlotSize fileState) (loadedCounters fileState) line) of
         Left message -> error $ "Line " ++ (show (linesSeen fileState)) ++ ": " ++ message
         Right newSlot -> addSlot fileState newSlot
 
