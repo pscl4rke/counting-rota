@@ -88,9 +88,12 @@ ideally cs r = 1 + ((slotsToFill r) `div` ((length cs) * ((length cs) - 1)))
 
 
 
+-- Use the square of the value to ensure that "AB AB CD CD" is considered
+-- better than "AB AB AB CD"
 partnerVariety :: [Counter] -> Rota -> Int
 partnerVariety cs r = (sum [over r c1 c2 | c1 <- cs, c2 <- cs]) `div` 2
-  where over r c1 c2 = 0 `max` ((pairTogether r c1 c2) - (ideally cs r))
+  where over r c1 c2 = (over' r c1 c2) * (over' r c1 c2)
+        over' r c1 c2 = 0 `max` ((pairTogether r c1 c2) - (ideally cs r))
 
 
 
