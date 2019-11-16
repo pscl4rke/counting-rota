@@ -1,6 +1,11 @@
 
 >>>>> ON
 set defaultSlotSize 2
+addCounterNormal Alice
+addCounterNormal Bob
+addCounterEmergency Carol
+addCounterNormal Dave
+addCounterNormal Eve
 <<<<< OFF
 
 The text before the ">>>>> ON" line is ignored

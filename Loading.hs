@@ -11,8 +11,7 @@ import Test.Tasty.TH
 import Test.Tasty.HUnit
 
 import Parsing (parseLine)
-import Planning (Counter, Slot(..), allExcept)
-import Requirements (hardcodedCounters)
+import Planning (Counter(..), normalCounter, emergencyCounter, Slot(..), allExcept)
 
 
 
@@ -43,6 +42,13 @@ addSlot fileState newSlot =
     in fileState { loadedSlots = appendedList }
 
 
+
+addCounter :: LoadedFile -> Counter -> LoadedFile
+addCounter fileState newCounter =
+    let appendedList = (loadedCounters fileState) ++ [newCounter]
+    in fileState { loadedCounters = appendedList }
+
+
 incremented :: LoadedFile -> LoadedFile
 incremented fileState =
     let plusOne = (linesSeen fileState) + 1
@@ -69,6 +75,12 @@ digestLineLoading fileState line
             case key of
                 "defaultSlotSize" -> fileState { loadedDefaultSlotSize = (read value) }
                 _ -> error $ "Unknown setting: " ++ key
+    | "addCounterNormal " `isPrefixOf` line =
+            let [_add, name] = words line in
+            addCounter fileState (normalCounter name)
+    | "addCounterEmergency " `isPrefixOf` line =
+            let [_add, name] = words line in
+            addCounter fileState (emergencyCounter name)
     | "===" `isPrefixOf` line = fileState
     | isHeader line = fileState
     | otherwise = case (parseLine (loadedDefaultSlotSize fileState) (loadedCounters fileState) line) of
@@ -89,12 +101,18 @@ loadFromPath :: String -> IO LoadedFile
 loadFromPath path = do
     textFromFile <- readFile path
     let linesInFile = splitOn "\n" textFromFile
-    let initialFileState = newLoadedFile { loadedCounters = hardcodedCounters }
+    let initialFileState = newLoadedFile
     return $ foldl' digestLine initialFileState linesInFile
 
 case_loadExampleCounters = do
     loadedFile <- loadFromPath "example.rota"
-    hardcodedCounters @=? loadedCounters loadedFile
+    loadedCounters loadedFile @?= [
+          Counter True  "Alice"
+        , Counter True  "Bob"
+        , Counter False "Carol"
+        , Counter True  "Dave"
+        , Counter True  "Eve"
+        ]
 
 case_loadExampleSlotsLength = do
     loadedFile <- loadFromPath "example.rota"
