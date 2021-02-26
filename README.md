@@ -25,3 +25,8 @@ These are the properties I want but haven't yet got:
 * Takes into account service so far on previous rotas
 * Ensures enough combined experience
 
+Desirable technical improvements:
+
+* Package up for easy distribution and installation
+* Parallelise the thinking across cores
+
